@@ -20,7 +20,7 @@ class RedirectBasedOnRole
             $user = Auth::user();
 
             if ($user->isAdmin()) {
-                return redirect('/admin/dashboard');
+                return redirect('/admin');
             } elseif ($user->isUser()) {
                 return redirect('/dashboard');
             }

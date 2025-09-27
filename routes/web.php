@@ -17,13 +17,13 @@ Route::middleware([
     })->name('dashboard');
 
     // Routes admin
-    Route::prefix('admin')->middleware('admin')->group(function () {
-        Route::get('/dashboard', function () {
-            return view('admin.dashboard');
-        })->name('admin.dashboard');
+    // Route::prefix('admin')->middleware('admin')->group(function () {
+    //     Route::get('/dashboard', function () {
+    //         return view('admin.dashboard');
+    //     })->name('admin.dashboard');
 
-        // Autres routes admin...
-    });
+    // Autres routes admin...
+
     // Route::get('/dashboard', function () {
     //     return view('dashboard');
     // })->name('dashboard');

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Backpack\CRUD\app\Models\Traits\CrudTrait;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -13,6 +14,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
+    use CrudTrait;
     use HasApiTokens;
 
     /** @use HasFactory<\Database\Factories\UserFactory> */
@@ -76,5 +78,10 @@ class User extends Authenticatable
     public function isUser()
     {
         return $this->hasRole('user');
+    }
+    // Dans app/Models/User.php
+    public function getFullNameDisplayAttribute()
+    {
+        return $this->first_name . ' ' . $this->last_name . ' (' . $this->email . ')';
     }
 }
