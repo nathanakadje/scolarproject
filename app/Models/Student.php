@@ -1,17 +1,17 @@
 <?php
 
 namespace App\Models;
-
-use Illuminate\Database\Eloquent\Model;
-use Backpack\CRUD\app\Models\Traits\CrudTrait;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use App\Models\ParentModel;
+
 class Student extends Model
 {
-    //
-    use CrudTrait;
-    use HasFactory;
-    use CrudTrait;
-    use HasFactory;
+    use HasFactory, InteractsWithMedia;
 
     protected $fillable = [
         'student_number',
@@ -36,23 +36,97 @@ class Student extends Model
         'enrollment_date' => 'date',
     ];
 
-    // Relations
-    public function parents()
+
+    protected static function booted()
     {
-        return $this->belongsToMany(ParentModel::class, 'student_parent', 'student_id', 'parent_id')
-            ->withPivot('is_primary_contact');
+        static::creating(function ($student) {
+            if (empty($student->student_number)) {
+                $student->student_number = 'STU' . now()->year . str_pad(Student::max('id') + 1, 4, '0', STR_PAD_LEFT);
+            }
+        });
     }
 
-    public function enrollments()
+    // Relations
+    public function parents(): BelongsToMany
+    {
+        return $this->belongsToMany(ParentModel::class, 'student_parent', 'student_id', 'parent_id')
+            ->withPivot('is_primary_contact')
+            ->withTimestamps();
+    }
+
+    public function enrollments(): HasMany
     {
         return $this->hasMany(Enrollment::class);
     }
 
-    public function currentEnrollment()
+    public function grades(): HasMany
     {
-        return $this->hasOne(Enrollment::class)
-            ->whereHas('academicYear', fn($q) => $q->where('is_current', true));
+        return $this->hasMany(Grade::class);
     }
+
+    public function attendances(): HasMany
+    {
+        return $this->hasMany(Attendance::class);
+    }
+
+    // Méthodes utilitaires
+    public function getFullNameAttribute()
+    {
+        return trim("{$this->first_name} {$this->last_name}");
+    }
+
+    public function getCurrentEnrollment()
+    {
+        return $this->enrollments()
+            ->whereHas('academicYear', function ($query) {
+                $query->where('is_current', true);
+            })
+            ->first();
+    }
+    //
+    // use HasFactory;
+    // use HasFactory;
+
+    // protected $fillable = [
+    //     'student_number',
+    //     'first_name',
+    //     'last_name',
+    //     'birth_date',
+    //     'birth_place',
+    //     'gender',
+    //     'nationality',
+    //     'phone',
+    //     'email',
+    //     'address',
+    //     'photo',
+    //     'enrollment_date',
+    //     'status',
+    //     'medical_info',
+    //     'notes'
+    // ];
+
+    // protected $casts = [
+    //     'birth_date' => 'date',
+    //     'enrollment_date' => 'date',
+    // ];
+
+    // // Relations
+    // public function parents()
+    // {
+    //     return $this->belongsToMany(ParentModel::class, 'student_parent', 'student_id', 'parent_id')
+    //         ->withPivot('is_primary_contact');
+    // }
+
+    // public function enrollments()
+    // {
+    //     return $this->hasMany(Enrollment::class);
+    // }
+
+    // public function currentEnrollment()
+    // {
+    //     return $this->hasOne(Enrollment::class)
+    //         ->whereHas('academicYear', fn($q) => $q->where('is_current', true));
+    // }
 
     // public function classes()
     // {
@@ -70,19 +144,16 @@ class Student extends Model
     //     return $this->hasMany(Attendance::class);
     // }
 
-    // public function payments()
-    // {
-    //     return $this->hasMany(Payment::class);
-    // }
+    // // public function payments()
+    // // {
+    // //     return $this->hasMany(Payment::class);
+    // // }
 
-    // Accesseurs
-    public function getFullNameAttribute()
-    {
-        return "{$this->first_name} {$this->last_name}";
-    }
+    // // Accesseurs
 
-    // public function getAgeAttribute()
-    // {
-    //     return $this->birth_date->age;
-    // }
+
+    // // public function getAgeAttribute()
+    // // {
+    // //     return $this->birth_date->age;
+    // // }
 }
