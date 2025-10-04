@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Enrollments\Schemas;
 
+use App\Models\AcademicYear;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -9,7 +10,6 @@ use Filament\Forms\Components\Textarea;
 use Filament\Schemas\Schema;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Grid;
-
 
 class EnrollmentForm
 {
@@ -44,7 +44,7 @@ class EnrollmentForm
                                     ->relationship('academicYear', 'name')
                                     ->required()
                                     ->default(function () {
-                                        return \App\Models\AcademicYear::where('is_current', true)->first()?->id;
+                                        return AcademicYear::where('is_current', true)->first()?->id;
                                     }),
 
                                 DatePicker::make('enrollment_date')

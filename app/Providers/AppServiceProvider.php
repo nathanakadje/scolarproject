@@ -22,6 +22,8 @@ class AppServiceProvider extends ServiceProvider
 
             // Couleurs supplémentaires personnalisées
             'rose' => Color::Rose,
+            'pink' => Color::Pink,
+            'sky' => Color::Sky,
             'lime' => Color::Lime,
             'cyan' => Color::Cyan,
             'teal' => Color::Teal,

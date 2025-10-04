@@ -35,7 +35,7 @@ class ClassModel extends Model
 
     public function enrollments(): HasMany
     {
-        return $this->hasMany(Enrollment::class);
+        return $this->hasMany(Enrollment::class, 'class_id');
     }
 
     public function teacherAssignments(): HasMany

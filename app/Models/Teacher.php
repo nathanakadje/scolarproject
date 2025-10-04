@@ -39,9 +39,21 @@ class Teacher extends Model
 
     public function classAssignments(): HasMany
     {
-        return $this->hasMany(TeacherClassAssignment::class);
+        return $this->hasMany(TeacherClassAssignment::class, 'teacher_id');
     }
 
+    public function classes()
+    {
+        return $this->belongsToMany(ClassModel::class, 'teacher_class_assignments', 'teacher_id', 'class_id')
+            ->withPivot('subject_id', 'academic_year_id', 'is_main_teacher')
+            ->withTimestamps();
+    }
+
+    public function subjects()
+    {
+        return $this->belongsToMany(Subject::class, 'teacher_class_assignments', 'teacher_id', 'subject_id')
+            ->withPivot('class_id', 'academic_year_id');
+    }
     public function evaluations(): HasMany
     {
         return $this->hasMany(Evaluation::class);
@@ -51,7 +63,10 @@ class Teacher extends Model
     {
         return $this->hasMany(Attendance::class, 'marked_by');
     }
-
+    public function academicYear()
+    {
+        return $this->belongsTo(AcademicYear::class, 'academic_year_id');
+    }
     public function getFullNameAttribute(): string
     {
         return $this->first_name . ' ' . $this->last_name;
@@ -82,23 +97,7 @@ class Teacher extends Model
 //         'specializations' => 'array',
 //     ];
 
-    //     // Relations
-//     public function classAssignments()
-//     {
-//         return $this->hasMany(TeacherClassAssignment::class);
-//     }
 
-    //     public function classes()
-//     {
-//         return $this->belongsToMany(ClassModel::class, 'teacher_class_assignments')
-//             ->withPivot('subject_id', 'academic_year_id', 'is_main_teacher');
-//     }
-
-    //     public function subjects()
-//     {
-//         return $this->belongsToMany(Subject::class, 'teacher_class_assignments')
-//             ->withPivot('class_id', 'academic_year_id');
-//     }
 
     //     // public function evaluations()
 //     // {

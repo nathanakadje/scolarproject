@@ -11,6 +11,7 @@ use Filament\Schemas\Schema;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use App\Models\Student;
+use App\Models\ParentModel;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
 use Illuminate\Database\Eloquent\Model;
@@ -160,14 +161,36 @@ class StudentForm
                                         Toggle::make('is_emergency_contact')
                                             ->label('Contact d\'urgence')
                                             ->default(false),
-                                    ]),
+
+                                    ])
+                                    ->createOptionUsing(function (array $data, $field) {
+                                        // Créez le parent
+                                        $parent = ParentModel::create($data);
+
+                                        // Rattachez immédiatement ce parent au student créé en cours
+                                        // $field->getLivewire() récupère la Livewire du formulaire
+                                        $student = Student::find(request()->route('record'));
+
+                                        if ($student) {
+                                            $student->parents()->attach($parent->id, [
+                                                'relationship' => $data['relationship'],
+                                                'is_primary_contact' => $data['is_emergency_contact'] ?? false,
+                                            ]);
+                                        }
+
+                                        return $parent->id;
+                                    })
+
                             ]),
-                        Tab::make('Enrollments & Grades')
+                        Tab::make('Enrollments')
                             ->schema([
                                 DatePicker::make('enrollment_date')
                                     ->label('Date d’inscription')
                                     ->default(now())
                                     ->required(),
+
+
+
                                 // Repeater::make('grades')
                                 //     ->relationship()
                                 //     ->schema([
