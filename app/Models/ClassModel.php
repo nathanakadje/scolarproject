@@ -52,6 +52,24 @@ class ClassModel extends Model
     {
         return $this->hasMany(Attendance::class);
     }
+    // app/Models/ClassModel.php
+
+    public function mainTeacher()
+    {
+        return $this->belongsToMany(Teacher::class, 'teacher_class_assignments', 'class_id', 'teacher_id')
+            ->wherePivot('is_main_teacher', true)
+            ->withPivot('academic_year_id')
+            ->withTimestamps()
+            ->limit(1);
+    }
+    // app/Models/Teacher.php
+
+    public function getFullNameAttribute()
+    {
+        return "{$this->first_name} {$this->last_name}";
+    }
+
+
 
     // use HasFactory;
 

@@ -1,10 +1,16 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
+use App\Livewire\Professor\ProfDashboard;
+use App\Livewire\Professor\Calendar;
+use App\Livewire\Professor\Messages;
 Route::get('/', function () {
     return view('welcome');
 });
+
+// Route::get('/dashboards', ProfDashboard::class)->name('dashboard');
+
+
 
 Route::middleware([
     'auth:sanctum',
@@ -16,15 +22,9 @@ Route::middleware([
         return view('dashboard');
     })->name('dashboard');
 
-    // Routes admin
-    // Route::prefix('admin')->middleware('admin')->group(function () {
-    //     Route::get('/dashboard', function () {
-    //         return view('admin.dashboard');
-    //     })->name('admin.dashboard');
 
-    // Autres routes admin...
+    Route::get('/teacher/dashboard', ProfDashboard::class);
 
-    // Route::get('/dashboard', function () {
-    //     return view('dashboard');
-    // })->name('dashboard');
 });
+
+

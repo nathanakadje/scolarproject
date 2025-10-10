@@ -19,9 +19,12 @@ class AdminMiddleware
         // if (!Auth::check() || !Auth::user()->isAdmin()) {
         //     abort(403, 'Accès refusé. Droits administrateur requis.');
         // }
-        if (!auth()->user()->hasAnyRole(['admin', 'teacher', 'secretary'])) {
+        if (!Auth::check() || !Auth::user()->hasAnyRole(['admin', 'teacher', 'student'])) {
             abort(403, 'Accès non autorisé');
         }
+        // if (!auth()->user()->hasAnyRole(['admin', 'teacher', 'student'])) {
+        //     abort(403, 'Accès non autorisé');
+        // }
 
 
         return $next($request);

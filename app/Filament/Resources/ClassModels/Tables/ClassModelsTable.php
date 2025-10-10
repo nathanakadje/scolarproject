@@ -24,6 +24,16 @@ class ClassModelsTable
                     ->searchable()
                     ->sortable()
                     ->badge(),
+                // ✅ Professeur principal
+                TextColumn::make('mainTeacher')
+                    ->label('Professeur principal')
+                    ->formatStateUsing(function ($record) {
+                        // On récupère le premier professeur principal s’il existe
+                        $mainTeacher = $record->mainTeacher()->first();
+                        return $mainTeacher ? $mainTeacher->full_name ?? ($mainTeacher->first_name . ' ' . $mainTeacher->last_name) : 'Non défini';
+                    })
+                    ->sortable()
+                    ->searchable(),
 
                 TextColumn::make('name')
                     ->label('Nom')

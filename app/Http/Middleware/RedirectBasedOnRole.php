@@ -21,10 +21,25 @@ class RedirectBasedOnRole
 
             if ($user->isAdmin()) {
                 return redirect('/admin');
-            } elseif ($user->isUser()) {
-                return redirect('/dashboard');
+            } elseif ($user->isTeacher()) {
+                return redirect('/teacher/dashboard');
             }
         }
+        // if (Auth::check()) {
+        //     $user = Auth::user();
+
+        //     if ($user->hasRole('admin')) {
+        //         return redirect()->route('admin.dashboard');
+        //     }
+
+        //     if ($user->hasRole('teacher')) {
+        //         return redirect()->route('teacher.dashboard');
+        //     }
+
+        //     if ($user->hasRole('student')) {
+        //         return redirect()->route('student.dashboard');
+        //     }
+        // }
         return $next($request);
     }
 }
