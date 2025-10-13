@@ -30,8 +30,13 @@ class ClassModel extends Model
 
     public function academicLevel(): BelongsTo
     {
-        return $this->belongsTo(AcademicLevel::class);
+        return $this->belongsTo(AcademicLevel::class, 'academic_level_id');
     }
+    public function academicYear(): BelongsTo
+    {
+        return $this->belongsTo(AcademicYear::class, 'academic_year_id');
+    }
+
 
     public function enrollments(): HasMany
     {
@@ -42,6 +47,12 @@ class ClassModel extends Model
     {
         return $this->hasMany(TeacherClassAssignment::class);
     }
+    public function students()
+    {
+        return $this->belongsToMany(Student::class, 'enrollments', 'class_id', 'student_id')
+            ->withPivot('academic_year_id', 'status');
+    }
+
 
     public function evaluations(): HasMany
     {
@@ -105,10 +116,6 @@ class ClassModel extends Model
     //     return $this->hasMany(Enrollment::class);
     // }
 
-    // public function students()
-    // {
-    //     return $this->belongsToMany(Student::class, 'enrollments')->withPivot('academic_year_id', 'status');
-    // }
 
     // public function teacherAssignments()
     // {

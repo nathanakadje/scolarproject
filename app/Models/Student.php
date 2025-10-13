@@ -6,8 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\MediaLibrary\HasMedia;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use App\Models\ParentModel;
+use Carbon\Carbon;
 
 class Student extends Model
 {
@@ -35,7 +37,17 @@ class Student extends Model
         'birth_date' => 'date',
         'enrollment_date' => 'date',
     ];
+    protected $appends = ['age'];
 
+    public function getAgeAttribute()
+    {
+        // Force la conversion en Carbon si ce n'est pas déjà fait
+        $birth = $this->birth_date instanceof Carbon
+            ? $this->birth_date
+            : Carbon::parse($this->birth_date);
+
+        return $birth ? $birth->age : null;
+    }
 
     protected static function booted()
     {
@@ -83,6 +95,20 @@ class Student extends Model
             })
             ->first();
     }
+    public function academicYears()
+    {
+        return $this->belongsToMany(
+            AcademicYear::class,
+            'enrollments',
+            'student_id',
+            'academic_year_id'
+        )->withPivot('class_id', 'status');
+    }
+    public function classe(): BelongsTo
+    {
+        return $this->belongsTo(ClassModel::class, 'class_id');
+    }
+
     //
     // use HasFactory;
     // use HasFactory;
@@ -128,11 +154,6 @@ class Student extends Model
     //         ->whereHas('academicYear', fn($q) => $q->where('is_current', true));
     // }
 
-    // public function classes()
-    // {
-    //     return $this->belongsToMany(ClassModel::class, 'enrollments')
-    //         ->withPivot('academic_year_id', 'status');
-    // }
 
     // public function grades()
     // {

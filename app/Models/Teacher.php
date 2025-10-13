@@ -14,6 +14,7 @@ class Teacher extends Model
     use HasFactory, InteractsWithMedia;
 
     protected $fillable = [
+        'user_id',
         'teacher_number',
         'first_name',
         'last_name',
@@ -36,7 +37,16 @@ class Teacher extends Model
         'salary' => 'decimal:2',
         'specializations' => 'array',
     ];
-
+    /*
+    User relation (one-to-one) add user_id in teachers table
+    */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+    /*
+        Classe relation teacher can be multiple classes
+    */
     public function classAssignments(): HasMany
     {
         return $this->hasMany(TeacherClassAssignment::class, 'teacher_id');
@@ -48,12 +58,37 @@ class Teacher extends Model
             ->withPivot('subject_id', 'academic_year_id', 'is_main_teacher')
             ->withTimestamps();
     }
+    public function getCurrentClasses()
+    {
+        return $this->classes()->get(); // simple récupération
+    }
+
+
+    /*
+        User relation (one-to-one) add user_id in teachers table
+    */
 
     public function subjects()
     {
         return $this->belongsToMany(Subject::class, 'teacher_class_assignments', 'teacher_id', 'subject_id')
             ->withPivot('class_id', 'academic_year_id');
     }
+
+    public function getSubjectsForClass($classId)
+    {
+        // Récupérer la liste d'IDs de subjects depuis le pivot
+        $subjectIds = $this->classes()
+            ->where('class_id', $classId)
+            ->withPivot('subject_id')
+            ->get()
+            ->pluck('pivot.subject_id')
+            ->unique()
+            ->toArray();
+
+        // Charger les objets Subject correspondants
+        return Subject::whereIn('id', $subjectIds)->get();
+    }
+
     public function evaluations(): HasMany
     {
         return $this->hasMany(Evaluation::class);
@@ -71,6 +106,10 @@ class Teacher extends Model
     {
         return $this->first_name . ' ' . $this->last_name;
     }
+
+
+
+
     //     use HasFactory;
 
     //     protected $fillable = [

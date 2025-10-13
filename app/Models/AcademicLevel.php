@@ -25,7 +25,7 @@ class AcademicLevel extends Model
 
     public function classes(): HasMany
     {
-        return $this->hasMany(ClassModel::class);
+        return $this->hasMany(ClassModel::class, 'academic_level_id');
     }
     // use HasFactory;
 

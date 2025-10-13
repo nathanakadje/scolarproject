@@ -1,0 +1,18 @@
+[90m= [39m[34;4mApp\Models\Teacher[39;24m {#7252
+    [34muser_id[39m: [35m4[39m,
+    [34mteacher_number[39m: "[32mT012[39m",
+    [34mfirst_name[39m: "[32mJean[39m",
+    [34mlast_name[39m: "[32mDiabate[39m",
+    [34mbirth_date[39m: "[32m1982-07-22 00:00:00[39m",
+    [34mgender[39m: "[32mM[39m",
+    [34mphone[39m: "[32m+225 05 87 65 43 21[39m",
+    [34memail[39m: "[32mjen.diabate@ecole.ci[39m",
+    [34maddress[39m: "[32mMarcory, Abidjan[39m",
+    [34mqualification[39m: "[32mLicence[39m",
+    [34mhire_date[39m: "[32m2024-10-12 16:28:38[39m",
+    [34mstatus[39m: "[32mactive[39m",
+    [34mupdated_at[39m: "[32m2025-10-12 16:28:38[39m",
+    [34mcreated_at[39m: "[32m2025-10-12 16:28:38[39m",
+    [34mid[39m: [35m10[39m,
+  }
+

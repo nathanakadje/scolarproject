@@ -208,6 +208,17 @@ class StudentForm
                                 //     ->createItemButtonLabel('Ajouter une note'),
                             ]),
 
+                        Tab::make('Affectation')
+                            ->schema([
+                                Select::make('class_id')
+                                    ->label('Classe')
+                                    ->relationship('classe', 'name') // relation belongsTo
+                                    ->searchable()
+                                    ->preload()
+                                    ->required(),
+
+                            ]),
+
                     ]),
             ]);
         //     return $schema

@@ -54,12 +54,17 @@ class StudentsTable
                         'graduated' => 'Diplômé',
                         'dropped' => 'Abandonné',
                     }),
+                TextColumn::make('classe.name')
+                    ->label('Classe')
+                    ->sortable()
+                    ->searchable(),
 
                 TextColumn::make('enrollment_date')
                     ->label('Date d\'inscription')
                     ->date()
                     ->sortable(),
             ])
+
             ->filters([
                 SelectFilter::make('status')
                     ->label('Statut')
