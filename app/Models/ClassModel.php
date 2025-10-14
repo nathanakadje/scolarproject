@@ -47,11 +47,16 @@ class ClassModel extends Model
     {
         return $this->hasMany(TeacherClassAssignment::class);
     }
-    public function students()
+    // public function students()
+    // {
+    //     return $this->belongsToMany(Student::class, 'enrollments', 'class_id', 'student_id')
+    //         ->withPivot('academic_year_id', 'status');
+    // }
+    public function students(): HasMany
     {
-        return $this->belongsToMany(Student::class, 'enrollments', 'class_id', 'student_id')
-            ->withPivot('academic_year_id', 'status');
+        return $this->hasMany(Student::class, 'class_id');
     }
+
 
 
     public function evaluations(): HasMany

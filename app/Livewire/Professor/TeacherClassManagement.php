@@ -55,7 +55,7 @@ class TeacherClassManagement extends Component
             'academicLevel',
             'academicYear',
             'students' => function ($query) {
-                $query->where('enrollments.status', 'active')
+                $query->where('status', 'active')
                     ->orderBy('last_name')
                     ->orderBy('first_name');
             }
@@ -76,12 +76,13 @@ class TeacherClassManagement extends Component
     {
         if (!$this->selectedClass)
             return collect();
-
+        // $students = $this->selectedClass->students()->get();
+        // dd($students);
         $students = $this->selectedClass->students()
             ->when($this->searchStudent, function ($query) {
                 $query->where(function ($q) {
-                    $q->where('first_name', 'like', "%{$this->searchStudent}%")
-                        ->orWhere('last_name', 'like', "%{$this->searchStudent}%")
+                    $q->where('first_name', 'ilike', "%{$this->searchStudent}%")
+                        ->orWhere('last_name', 'ilike', "%{$this->searchStudent}%")
                         ->orWhere('student_number', 'like', "%{$this->searchStudent}%");
                 });
             })
@@ -140,7 +141,7 @@ class TeacherClassManagement extends Component
         if (!$this->selectedStudentId)
             return null;
 
-        return Student::with(['classe.level', 'grades.evaluation.subject'])
+        return Student::with(['classe.academicLevel', 'grades.evaluation.subject'])
             ->find($this->selectedStudentId);
     }
 
@@ -200,7 +201,7 @@ class TeacherClassManagement extends Component
             return [];
 
         $totalStudents = $this->selectedClass->students()->count();
-        $activeStudents = $this->selectedClass->students()->where('enrollments.status', 'active')->count();
+        $activeStudents = $this->selectedClass->students()->where('status', 'active')->count();
 
         $todayAttendance = Attendance::where('class_id', $this->selectedClassId)
             ->where('date', $this->attendanceDate)

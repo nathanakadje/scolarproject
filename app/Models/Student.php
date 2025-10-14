@@ -80,6 +80,20 @@ class Student extends Model
     {
         return $this->hasMany(Attendance::class);
     }
+    public function getAttendanceRateAttribute(): float
+    {
+        $total = $this->attendances()->count();
+
+        if ($total === 0) {
+            return 0;
+        }
+
+        $presentCount = $this->attendances()
+            ->where('status', 'present')
+            ->count();
+
+        return round(($presentCount / $total) * 100, 2);
+    }
 
     // Méthodes utilitaires
     public function getFullNameAttribute()
@@ -108,6 +122,8 @@ class Student extends Model
     {
         return $this->belongsTo(ClassModel::class, 'class_id');
     }
+
+
 
     //
     // use HasFactory;

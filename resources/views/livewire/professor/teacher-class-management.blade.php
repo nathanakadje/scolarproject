@@ -25,7 +25,7 @@
                     @forelse($this->classes as $class)
                         <button wire:click="selectClass({{ $class->id }})"
                             class="w-full text-left p-4 rounded-lg border-2 transition-all hover:shadow-md
-                                                                                    {{ $selectedClassId == $class->id ? 'border-emerald-500 bg-emerald-50' : 'border-gray-200 hover:border-emerald-200' }}">
+                                                                                                                    {{ $selectedClassId == $class->id ? 'border-emerald-500 bg-emerald-50' : 'border-gray-200 hover:border-emerald-200' }}">
                             <div class="flex items-center justify-between">
                                 <div>
                                     <h3 class="font-semibold text-gray-900">{{ $class->full_name }}</h3>
@@ -74,7 +74,7 @@
                         <div class="flex items-center justify-between">
                             <div>
                                 <h2 class="text-2xl font-bold">{{  $this->selectedClass->name }}</h2>
-                                <p class="text-emerald-100 mt-1">{{  $this->selectedClass->room ?? 'Salle non définie' }} •
+                                <p class="text-emerald-100 mt-1">
                                     Année
                                     {{ $this->selectedClass->academicYear->name ?? 'Non définie' }}
                                 </p>
@@ -114,13 +114,13 @@
                         <div class="flex flex-wrap gap-2">
                             <button wire:click="selectSubject(null)"
                                 class="px-4 py-2 rounded-lg font-medium transition-all
-                                                                                                                                                    {{ !$selectedSubjectId ? 'bg-emerald-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
+                                                                                                                                                {{ !$selectedSubjectId ? 'bg-emerald-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
                                 Toutes les matières
                             </button>
                             @foreach($this->subjects as $subject)
                                 <button wire:click="selectSubject({{ $subject->id }})"
                                     class="px-4 py-2 rounded-lg font-medium transition-all
-                                                                                                                                                                                                                {{ $selectedSubjectId == $subject->id ? 'bg-emerald-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
+                                                                                                                                                                                                                                                                                                                {{ $selectedSubjectId == $subject->id ? 'bg-emerald-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
                                     {{ $subject->name }}
                                 </button>
                             @endforeach
@@ -226,7 +226,7 @@
                                         <td class="px-6 py-4">
                                             <span
                                                 class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
-                                                                                                                                                                    {{ $student->gender == 'M' ? 'bg-blue-100 text-blue-800' : 'bg-pink-100 text-pink-800' }}">
+                                                                                                                                                                                                                                    {{ $student->gender == 'M' ? 'bg-blue-100 text-blue-800' : 'bg-pink-100 text-pink-800' }}">
                                                 {{ $student->gender == 'M' ? 'Garçon' : 'Fille' }}
                                             </span>
                                         </td>
@@ -236,25 +236,25 @@
                                             <div class="flex space-x-1">
                                                 <button wire:click="markAttendance({{ $student->id }}, 'present')"
                                                     class="p-2 rounded-lg transition-all
-                                                                                                                                                                        {{ isset($attendanceStatus[$student->id]) && $attendanceStatus[$student->id] == 'present' ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-green-100' }}"
+                                                                                                                                                                                                                                        {{ isset($attendanceStatus[$student->id]) && $attendanceStatus[$student->id] == 'present' ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-green-100' }}"
                                                     title="Présent">
                                                     ✓
                                                 </button>
                                                 <button wire:click="markAttendance({{ $student->id }}, 'absent')"
                                                     class="p-2 rounded-lg transition-all
-                                                                                                                                                                        {{ isset($attendanceStatus[$student->id]) && $attendanceStatus[$student->id] == 'absent' ? 'bg-red-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-red-100' }}"
+                                                                                                                                                                                                                                        {{ isset($attendanceStatus[$student->id]) && $attendanceStatus[$student->id] == 'absent' ? 'bg-red-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-red-100' }}"
                                                     title="Absent">
                                                     ✗
                                                 </button>
                                                 <button wire:click="markAttendance({{ $student->id }}, 'late')"
                                                     class="p-2 rounded-lg transition-all
-                                                                                                                                                                        {{ isset($attendanceStatus[$student->id]) && $attendanceStatus[$student->id] == 'late' ? 'bg-yellow-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-yellow-100' }}"
+                                                                                                                                                                                                                                        {{ isset($attendanceStatus[$student->id]) && $attendanceStatus[$student->id] == 'late' ? 'bg-yellow-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-yellow-100' }}"
                                                     title="Retard">
                                                     ⏰
                                                 </button>
                                                 <button wire:click="markAttendance({{ $student->id }}, 'excused')"
                                                     class="p-2 rounded-lg transition-all
-                                                                                                                                                                        {{ isset($attendanceStatus[$student->id]) && $attendanceStatus[$student->id] == 'excused' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-blue-100' }}"
+                                                                                                                                                                                                                                        {{ isset($attendanceStatus[$student->id]) && $attendanceStatus[$student->id] == 'excused' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-blue-100' }}"
                                                     title="Excusé">
                                                     📝
                                                 </button>
@@ -383,7 +383,10 @@
                     <!-- Statistics -->
                     <div class="grid grid-cols-3 gap-4 mb-6">
                         <div class="p-4 bg-blue-50 rounded-lg text-center">
-                            <p class="text-2xl font-bold text-blue-600">{{ $this->selectedStudent->getAttendanceRate() }}%
+                            <p class="text-2xl font-bold text-blue-600">
+
+                                {{ $this->selectedStudent->attendance_rate ?? 'Non définie' }}%
+
                             </p>
                             <p class="text-sm text-gray-600">Taux de présence</p>
                         </div>
