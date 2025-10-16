@@ -4,6 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <title>{{ $title ?? 'Espace Professeur' }} - Plateforme Scolaire</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
@@ -73,7 +75,7 @@
                         Ressources
                     </a>
 
-                    <a href="#"
+                    <a href="{{ route('professor.students') }}"
                         class="flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-emerald-50 hover:text-emerald-600 transition-all {{ request()->routeIs('professor.students') ? 'bg-emerald-50 text-emerald-600 font-semibold' : '' }}">
                         <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

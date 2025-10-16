@@ -29,7 +29,7 @@
                     @foreach($this->classes as $class)
                         <button wire:click="selectClass({{ $class->id }})"
                             class="w-full text-left p-3 rounded-lg border-2 transition-all
-                                                                                    {{ $selectedClassId == $class->id ? 'border-emerald-500 bg-emerald-50' : 'border-gray-200 hover:border-emerald-200' }}">
+                                                                                                                                                                                                                                                                                    {{ $selectedClassId == $class->id ? 'border-emerald-500 bg-emerald-50' : 'border-gray-200 hover:border-emerald-200' }}">
                             <div class="font-semibold text-gray-900">{{ $class->full_name }}</div>
                             <div class="text-sm text-gray-600">{{ $class->active_students_count }} élèves</div>
                         </button>
@@ -47,7 +47,7 @@
                         @foreach($this->subjects as $subject)
                             <button wire:click="selectSubject({{ $subject->id }})"
                                 class="w-full text-left p-3 rounded-lg border-2 transition-all
-                                                                                                                                                {{ $selectedSubjectId == $subject->id ? 'border-emerald-500 bg-emerald-50' : 'border-gray-200 hover:border-emerald-200' }}">
+                                                                                                                                                                                                                                                                                                         {{ $selectedSubjectId == $subject->id ? 'border-emerald-500 bg-emerald-50' : 'border-gray-200 hover:border-emerald-200' }}">
                                 <div class="font-semibold text-gray-900">{{ $subject->name }}</div>
                                 <div class="text-xs text-gray-600">Coef. {{ $subject->coefficient }}</div>
                             </button>
@@ -85,7 +85,7 @@
                                 @foreach($this->evaluations as $evaluation)
                                     <div wire:click="selectEvaluation({{ $evaluation->id }})"
                                         class="p-4 border-2 rounded-lg cursor-pointer transition-all hover:shadow-md
-                                                                                                                                                                                                                    {{ $selectedEvaluationId == $evaluation->id ? 'border-emerald-500 bg-emerald-50' : 'border-gray-200 hover:border-emerald-200' }}">
+                                                                                                                                                                                                                                                                                     {{ $selectedEvaluationId == $evaluation->id ? 'border-emerald-500 bg-emerald-50' : 'border-gray-200 hover:border-emerald-200' }}">
                                         <div class="flex items-start justify-between mb-2">
                                             <div class="flex-1">
                                                 <h3 class="font-semibold text-gray-900">{{ $evaluation->title }}</h3>
@@ -95,7 +95,7 @@
                                             </div>
                                             <span
                                                 class="px-2 py-1 rounded text-xs font-medium
-                                                                                                                                                                                                                            {{ $evaluation->type == 'examen' ? 'bg-red-100 text-red-800' : ($evaluation->type == 'composition' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800') }}">
+                                                                                                                                                                                                 {{ $evaluation->type == 'examen' ? 'bg-red-100 text-red-800' : ($evaluation->type == 'composition' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800') }}">
                                                 {{ ucfirst($evaluation->type) }}
                                             </span>
                                         </div>
@@ -273,7 +273,7 @@
                     </div>
                 </div>
 
-                <form wire:submit.prevent="createEvaluation" class="p-6 space-y-4">
+                <form wire:submit.prevent="save" class="p-6 space-y-4">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">Titre *</label>
                         <input type="text" wire:model="evaluationTitle"
@@ -294,6 +294,7 @@
                             <label class="block text-sm font-medium text-gray-700 mb-2">Type *</label>
                             <select wire:model="evaluationType"
                                 class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500">
+                                <option value="">Sélectionnez un type</option>
                                 <option value="quiz">Quiz</option>
                                 <option value="test">Test</option>
                                 <option value="exam">Examen</option>
@@ -313,28 +314,24 @@
                     <div class="grid grid-cols-3 gap-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Note max *</label>
-                            <input type="number" wire:model="maxScore" min="1" max="100"
+                            <input type="number" wire:model="maxScore" min="10" max="50"
                                 class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500">
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Coefficient *</label>
-                            <input type="number" wire:model="maxScore" min="1" max="100"
-                                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500">
                             @error('maxScore') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
                         </div>
 
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Trimestre *</label>
-                            <select wire:model="term"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500">
-                                <option value="1">1er Trimestre</option>
-                                <option value="2">2ème Trimestre</option>
-                                <option value="3">3ème Trimestre</option>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Status *</label>
+                            <select wire:model="evaluationStatus"
+                                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500">
+                                <option value="">Sélectionnez un type</option>
+                                <option value="draft">draft</option>
+                                <option value="published">Test</option>
+                                <option value="completed">Examen</option>
                             </select>
+                            @error('evaluationStatus') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
                         </div>
+
                     </div>
-                    <!-- Hidden fields pour la table -->
                     <input type="hidden" wire:model="classId">
                     <input type="hidden" wire:model="subjectId">
                     <input type="hidden" wire:model="teacherId">
@@ -351,8 +348,6 @@
                         </button>
                     </div>
                 </form>
-
-
             </div>
         </div>
     @endif

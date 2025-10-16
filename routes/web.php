@@ -1,6 +1,7 @@
 <?php
 
 use App\Livewire\Professor\GradeManagement;
+use App\Livewire\Professor\MyStudents;
 use App\Livewire\Professor\TeacherClassManagement;
 use Illuminate\Support\Facades\Route;
 use App\Livewire\Professor\ProfDashboard;
@@ -28,6 +29,7 @@ Route::middleware([
 
     Route::get('/teacher/dashboard', ProfDashboard::class);
     Route::get('/teacher/grade', GradeManagement::class)->name('professor.grades');
+    Route::get('/teacher/student', MyStudents::class)->name('professor.students');
     Route::get('/teacher/class', TeacherClassManagement::class)->name('professor.classes');
     Route::get('/student/dashboard', StudentDashboard::class);
 
