@@ -2,10 +2,10 @@
 
 namespace App\Livewire\Professor;
 
-use Illuminate\Validation\Rule;
 use App\Models\Teacher;
-use App\Models\Classe;
+use App\Models\ClassModel;
 use App\Models\Subject;
+use App\Models\AcademicYear;
 use App\Models\Evaluation;
 use App\Models\Grade;
 use App\Models\Student;
@@ -16,8 +16,20 @@ use Livewire\Attributes\Computed;
 #[Layout('layouts.professor-layout')]
 class GradeManagement extends Component
 {
+    public $name;
+    public $subjectId;
+    public $classId;
+    public $academicYearId;
+    public $teacherId;
+    public $type = 'devoir';
+    public $date;
+    public $durationMinutes;
+    public $description;
+    public $status = 'draft';
+
+
+    public $teachers;
     public $teacher;
-    public $evaluationStatus;
     public $selectedClassId = null;
     public $selectedSubjectId = null;
     public $selectedEvaluationId = null;
@@ -29,12 +41,7 @@ class GradeManagement extends Component
     public $evaluationType = 'devoir';
     public $evaluationDate;
     public $maxScore = 20;
-    public $coefficient = 1;
-    public $term = '1';
-    public $classId;
-    public $subjectId;
-    public $teacherId;
-    public $academicYearId;
+
 
     // Grades
     public $grades = [];
@@ -48,13 +55,14 @@ class GradeManagement extends Component
             session()->flash('error', 'Profil professeur non trouvé');
             return redirect()->route('professor.dashboard');
         }
-
-        $this->evaluationDate = now()->format('Y-m-d');
+        $this->teacherId = $this->teacher->id ?? null;
+        $this->evaluationDate = today()->format('Y-m-d');
     }
 
     #[Computed]
     public function classes()
     {
+
         return $this->teacher->getCurrentClasses();
     }
 
@@ -65,6 +73,12 @@ class GradeManagement extends Component
             return collect();
         return $this->teacher->getSubjectsForClass($this->selectedClassId);
     }
+    #[Computed]
+    public function academicYears()
+    {
+        return AcademicYear::orderBy('start_date', 'desc')->get();
+    }
+
 
     #[Computed]
     public function evaluations()
@@ -86,7 +100,7 @@ class GradeManagement extends Component
         if (!$this->selectedEvaluationId)
             return null;
 
-        return Evaluation::with(['classe.students', 'grades'])
+        return Evaluation::with(['class.students', 'grades'])
             ->find($this->selectedEvaluationId);
     }
 
@@ -96,7 +110,7 @@ class GradeManagement extends Component
         if (!$this->selectedEvaluation)
             return collect();
 
-        return $this->selectedEvaluation->classe->students()
+        return $this->selectedEvaluation->class->students()
             ->where('status', 'active')
             ->orderBy('last_name')
             ->orderBy('first_name')
@@ -123,6 +137,7 @@ class GradeManagement extends Component
         $this->selectedEvaluationId = $evaluationId;
         $this->loadGrades();
     }
+
 
     public function loadGrades()
     {
@@ -163,112 +178,64 @@ class GradeManagement extends Component
 
     public function resetEvaluationForm()
     {
-        $this->evaluationTitle = '';
+        $this->name = '';
         $this->evaluationDescription = '';
-        $this->evaluationType = 'devoir';
-        $this->evaluationStatus = 'draft';
-        $this->evaluationDate = now()->format('Y-m-d');
+        $this->type = 'devoir';
+        $this->date = today()->format('Y-m-d');
         $this->maxScore = 20;
-        $this->coefficient = 1;
-        $this->term = '1';
     }
 
-    // ------------------------------------------------
-    // ✅ Validation Rules
-    // ------------------------------------------------
-    protected function rules()
+    public function createEvaluation()
     {
-        return [
-            'evaluationTitle' => 'required|string|max:255',
-            'evaluationType' => ['required', Rule::in(['quiz', 'test', 'exam', 'assignment'])],
-            'evaluationStatus' => ['required', Rule::in(['draft', 'published', 'completed'])],
-            'evaluationDate' => 'required|date|after_or_equal:today',
-            'maxScore' => 'required|numeric|min:10|max:50',
-            'classId' => ['required', Rule::exists('classes', 'id')],
-            'subjectId' => ['required', Rule::exists('subjects', 'id')],
-            'teacherId' => ['required', Rule::exists('users', 'id')],
-            'academicYearId' => ['required', Rule::exists('academic_years', 'id')],
-        ];
+        $this->validate([
+            'name' => 'required|string|max:255',
+            'subjectId' => 'required|exists:subjects,id',
+            'classId' => 'required|exists:classes,id',
+            'academicYearId' => 'required|exists:academic_years,id',
+            'teacherId' => 'required|exists:teachers,id',
+            'type' => 'required|in:quiz,test,exam,assignment',
+            'date' => 'required|date',
+            'maxScore' => 'required|numeric|min:1',
+            'durationMinutes' => 'nullable|integer|min:1',
+            'description' => 'nullable|string',
+            'status' => 'required|in:draft,published,completed',
+        ]);
+
+        $evaluation = Evaluation::create([
+            'name' => $this->name,
+            'subject_id' => $this->subjectId,
+            'class_id' => $this->classId,
+            'academic_year_id' => $this->academicYearId,
+            'teacher_id' => $this->teacherId,
+            'type' => $this->type,
+            'date' => $this->date,
+            'max_score' => $this->maxScore,
+            'duration_minutes' => $this->durationMinutes,
+            'description' => $this->description,
+            'status' => $this->status,
+            // 'name' => $this->name,
+            // 'subjectId' => $this->selectedSubjectId,
+            // 'classId' => $this->selectedClassId,
+            // 'academicYearId' => $this->academicYearId,
+            // 'teacherId' => $this->teacherId,
+            // 'type' => $this->type,
+            // 'date' => $this->date,
+            // 'maxScore' => $this->maxScore,
+            // 'durationMinutes' => $this->durationMinutes,
+            // 'description' => $this->evaluationDescription,
+            // 'status' => $this->status,
+        ]);
+
+        $this->selectedEvaluationId = $evaluation->id;
+        $this->closeEvaluationModal();
+        $this->loadGrades();
+
+        session()->flash('success', 'Évaluation créée avec succès');
     }
-
-    // ------------------------------------------------
-    // ✅ Messages personnalisés
-    // ------------------------------------------------
-    protected function messages()
-    {
-        return [
-            'evaluationTitle.required' => 'Le titre de l\'évaluation est obligatoire.',
-            'evaluationStatus.required' => 'Le Status de est obligatoire.',
-            'evaluationTitle.max' => 'Le titre ne doit pas dépasser 255 caractères.',
-            'evaluationType.required' => 'Veuillez sélectionner un type d\'évaluation.',
-            'evaluationType.in' => 'Le type d\'évaluation sélectionné est invalide.',
-            'evaluationDate.required' => 'La date de l\'évaluation est obligatoire.',
-            'evaluationDate.after_or_equal' => 'La date ne peut pas être dans le passé.',
-            'maxScore.required' => 'La note maximale est obligatoire.',
-            'maxScore.min' => 'La note maximale doit être au moins de 10.',
-            'maxScore.max' => 'La note maximale ne peut pas dépasser 50.',
-            'classId.required' => 'La classe est obligatoire.',
-            'classId.exists' => 'La classe sélectionnée n\'existe pas.',
-            'subjectId.required' => 'La matière est obligatoire.',
-            'subjectId.exists' => 'La matière sélectionnée n\'existe pas.',
-            'teacherId.required' => 'Le professeur est obligatoire.',
-            'teacherId.exists' => 'Le professeur sélectionné n\'existe pas.',
-            'academicYearId.required' => 'L\'année académique est obligatoire.',
-            'academicYearId.exists' => 'L\'année académique sélectionnée n\'existe pas.',
-        ];
-    }
-
-    // ------------------------------------------------
-    // ✅ Alias des attributs (affichage dans erreurs)
-    // ------------------------------------------------
-    protected function validationAttributes()
-    {
-        return [
-            'evaluationTitle' => 'titre',
-            'evaluationType' => 'type d\'évaluation',
-            'evaluationStatus' => 'status',
-            'evaluationDate' => 'date',
-            'maxScore' => 'note maximale',
-            'classId' => 'classe',
-            'subjectId' => 'matière',
-            'teacherId' => 'professeur',
-            'academicYearId' => 'année académique',
-        ];
-    }
-
-    // ------------------------------------------------
-    // ✅ Méthode d’enregistrement
-    // ------------------------------------------------
-    public function save()
-    {
-        $this->validate();
-
-        try {
-            Evaluation::create([
-                'name' => $this->evaluationTitle,
-                'subject_id' => $this->subjectId,
-                'class_id' => $this->classId,
-                'academic_year_id' => $this->academicYearId,
-                'teacher_id' => $this->teacherId,
-                'type' => $this->evaluationType,
-                'date' => $this->evaluationDate,
-                'max_score' => $this->maxScore,
-                'description' => $this->evaluationDescription,
-                'status' => $this->evaluationStatus,
-            ]);
-
-
-            $this->dispatch('evaluation-created');
-            session()->flash('success', 'Évaluation créée avec succès!');
-
-        } catch (\Exception $e) {
-            session()->flash('error', 'Erreur lors de la création: ' . $e->getMessage());
-        }
-    }
-
 
     public function saveGrade($studentId)
     {
+
         $gradeData = $this->grades[$studentId] ?? null;
 
         if (!$gradeData || $gradeData['score'] === '') {
@@ -312,8 +279,12 @@ class GradeManagement extends Component
                 $savedCount++;
             }
         }
-
-        session()->flash('success', "{$savedCount} note(s) enregistrée(s) avec succès");
+        // 🔥 Envoi d'un événement Livewire
+        $this->dispatch('notify', [
+            'type' => 'success',
+            'message' => "{$savedCount} note(s) enregistrée(s) avec succès"
+        ]);
+        // session()->flash('success', "{$savedCount} note(s) enregistrée(s) avec succès");
     }
 
     public function publishEvaluation()

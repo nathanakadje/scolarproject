@@ -72,7 +72,7 @@ class MyStudents extends Component
             $query->where(function ($q) {
                 $q->where('first_name', 'ilike', "%{$this->searchTerm}%")
                     ->orWhere('last_name', 'ilike', "%{$this->searchTerm}%")
-                    ->orWhere('student_number', 'like', "%{$this->searchTerm}%")
+                    ->orWhere('student_number', 'ilike', "%{$this->searchTerm}%")
                     ->orWhere('email', 'ilike', "%{$this->searchTerm}%");
             });
         }
@@ -95,7 +95,7 @@ class MyStudents extends Component
         // Sorting
         $query->orderBy($this->sortBy, $this->sortDirection);
 
-        return $query->paginate(20);
+        return $query->paginate(3);
     }
 
     #[Computed]

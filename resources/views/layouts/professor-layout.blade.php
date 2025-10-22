@@ -209,7 +209,7 @@
             </footer>
         </div>
     </div>
-
+    <script src="https://unpkg.com/alpinejs@3.15.0/dist/cdn.min.js" defer></script>
     @livewireScripts
 </body>
 

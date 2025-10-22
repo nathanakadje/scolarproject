@@ -34,10 +34,11 @@ class Evaluation extends Model
         return $this->belongsTo(Subject::class, 'subject_id');
     }
 
-    public function class(): BelongsTo
+    public function class()
     {
-        return $this->belongsTo(ClassModel::class);
+        return $this->belongsTo(ClassModel::class, 'class_id');
     }
+
 
     public function academicYear(): BelongsTo
     {
@@ -49,8 +50,20 @@ class Evaluation extends Model
         return $this->belongsTo(Teacher::class);
     }
 
-    public function grades(): HasMany
+    public function grades()
     {
         return $this->hasMany(Grade::class);
+    }
+
+    public function getGradedCount()
+    {
+        return $this->grades()->count();
+    }
+    /*
+    Retrieve the total number of students in the class associated with this assessment.
+    */
+    public function getTotalStudents()
+    {
+        return $this->class ? $this->class->students()->count() : 0;
     }
 }

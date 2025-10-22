@@ -8,7 +8,7 @@
             </div>
             <div class="flex space-x-3">
                 <button wire:click="toggleViewMode"
-                    class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors flex items-center space-x-2">
+                    class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-gray-200 transition-colors flex items-center space-x-2">
                     @if($viewMode === 'grid')
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -161,7 +161,7 @@
                     class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500">
                     <option value="">Toutes les classes</option>
                     @foreach($this->classes as $class)
-                        <option value="{{ $class->id }}">{{ $class->full_name }}</option>
+                        <option value="{{ $class->id }}">{{ $class->name }}</option>
                     @endforeach
                 </select>
             </div>
@@ -193,7 +193,7 @@
             <!-- Clear Filters -->
             <div class="flex items-end">
                 <button wire:click="clearFilters"
-                    class="w-full px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
+                    class="w-full px-4 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-300 transition-colors">
                     Réinitialiser
                 </button>
             </div>
@@ -251,7 +251,7 @@
                         <!-- Status Badge -->
                         <span
                             class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium
-                                        {{ $student->status == 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
+                                                                                                                                                                                                                                                                                        {{ $student->status == 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
                             {{ ucfirst($student->status) }}
                         </span>
                     </div>
@@ -371,7 +371,7 @@
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-200">
-                        @foreach($students as $student)
+                        @foreach($this->students as $student)
                             <tr class="hover:bg-gray-50 transition-colors">
                                 <!-- Photo -->
                                 <td class="px-6 py-4">
@@ -405,7 +405,7 @@
                                 <td class="px-6 py-4">
                                     <span
                                         class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                        {{ $student->class_name }}
+                                        {{ $student->classe->name ?? '—' }}
                                     </span>
                                 </td>
 
@@ -447,7 +447,130 @@
                             </tr>
                         @endforeach
                     </tbody>
+
                 </table>
+                <div class="mt-2">
+                    {{ $this->students->links() }}
+                </div>
+            </div>
+        </div>
+    @endif
+
+    @if($showStudentModal && $this->selectedStudent)
+        <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+            wire:click="closeStudentModal">
+            <div class="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto" wire:click.stop>
+                <!-- Modal Header -->
+                <div class="sticky top-0 bg-gradient-to-r from-emerald-500 to-teal-600 p-6 text-white">
+                    <div class="flex items-start justify-between">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-16 h-16 rounded-full bg-white flex items-center justify-center">
+                                @if($this->selectedStudent->photo)
+                                    <img src="{{ asset('storage/' . $this->selectedStudent->photo) }}"
+                                        class="w-16 h-16 rounded-full object-cover"
+                                        alt="{{ $this->selectedStudent->full_name }}">
+                                @else
+                                    <span class="text-2xl font-bold text-emerald-600">
+                                        {{ substr($this->selectedStudent->first_name, 0, 1) }}{{ substr($this->selectedStudent->last_name, 0, 1) }}
+                                    </span>
+                                @endif
+                            </div>
+                            <div>
+                                <h2 class="text-2xl font-bold">{{ $this->selectedStudent->full_name }}</h2>
+                                <p class="text-emerald-100">{{ $this->selectedStudent->student_number }} •
+                                    {{ $this->selectedStudent->classe->full_name }}
+                                </p>
+                            </div>
+                        </div>
+                        <button wire:click="closeStudentModal"
+                            class="text-white hover:bg-white hover:bg-opacity-20 rounded-lg p-2 transition-colors">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Modal Content -->
+                <div class="p-6">
+                    <!-- Student Info Grid -->
+                    <div class="grid grid-cols-2 gap-6 mb-6">
+                        <div class="p-4 bg-gray-50 rounded-lg">
+                            <p class="text-sm text-gray-600">Date de naissance</p>
+                            <p class="font-semibold text-gray-900">
+                                {{ \Carbon\Carbon::parse($this->selectedStudent->birth_date)->format('d/m/Y') ?? '-' }}
+                                ({{ $this->selectedStudent->age }} ans)
+                            </p>
+                        </div>
+                        <div class="p-4 bg-gray-50 rounded-lg">
+                            <p class="text-sm text-gray-600">Lieu de naissance</p>
+                            <p class="font-semibold text-gray-900">{{ $this->selectedStudent->birth_place }}</p>
+                        </div>
+                        <div class="p-4 bg-gray-50 rounded-lg">
+                            <p class="text-sm text-gray-600">Nationalité</p>
+                            <p class="font-semibold text-gray-900">{{ $this->selectedStudent->nationality }}</p>
+                        </div>
+                        <div class="p-4 bg-gray-50 rounded-lg">
+                            <p class="text-sm text-gray-600">Genre</p>
+                            <p class="font-semibold text-gray-900">
+                                {{ $this->selectedStudent->gender == 'M' ? 'Masculin' : 'Féminin' }}
+                            </p>
+                        </div>
+                        <div class="p-4 bg-gray-50 rounded-lg">
+                            <p class="text-sm text-gray-600">Téléphone</p>
+                            <p class="font-semibold text-gray-900">{{ $this->selectedStudent->phone ?? 'Non renseigné' }}
+                            </p>
+                        </div>
+                        <div class="p-4 bg-gray-50 rounded-lg">
+                            <p class="text-sm text-gray-600">Email</p>
+                            <p class="font-semibold text-gray-900">{{ $this->selectedStudent->email ?? 'Non renseigné' }}
+                            </p>
+                        </div>
+                        <div class="p-4 bg-gray-50 rounded-lg col-span-2">
+                            <p class="text-sm text-gray-600">Adresse</p>
+                            <p class="font-semibold text-gray-900">{{ $this->selectedStudent->address }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Statistics -->
+                    <div class="grid grid-cols-3 gap-4 mb-6">
+                        <div class="p-4 bg-blue-50 rounded-lg text-center">
+                            <p class="text-2xl font-bold text-blue-600">
+
+                                {{ $this->selectedStudent->attendance_rate ?? 'Non définie' }}%
+
+                            </p>
+                            <p class="text-sm text-gray-600">Taux de présence</p>
+                        </div>
+                        <div class="p-4 bg-green-50 rounded-lg text-center">
+                            <p class="text-2xl font-bold text-green-600">
+                                {{ number_format($this->selectedStudent->grades->avg('score') ?? 0, 2) }}
+                            </p>
+                            <p class="text-sm text-gray-600">Moyenne générale</p>
+                        </div>
+                        <div class="p-4 bg-purple-50 rounded-lg text-center">
+                            <p class="text-2xl font-bold text-purple-600">{{ $this->selectedStudent->grades->count() }}</p>
+                            <p class="text-sm text-gray-600">Évaluations</p>
+                        </div>
+                    </div>
+
+                    <!-- Medical Info -->
+                    @if($this->selectedStudent->medical_info)
+                        <div class="p-4 bg-yellow-50 border-l-4 border-yellow-500 rounded mb-6">
+                            <h4 class="font-semibold text-yellow-900 mb-2">⚕️ Informations Médicales</h4>
+                            <p class="text-sm text-yellow-800">{{ $this->selectedStudent->medical_info }}</p>
+                        </div>
+                    @endif
+
+                    <!-- Notes -->
+                    @if($this->selectedStudent->notes)
+                        <div class="p-4 bg-blue-50 border-l-4 border-blue-500 rounded">
+                            <h4 class="font-semibold text-blue-900 mb-2">📝 Notes</h4>
+                            <p class="text-sm text-blue-800">{{ $this->selectedStudent->notes }}</p>
+                        </div>
+                    @endif
+                </div>
             </div>
         </div>
     @endif

@@ -17,6 +17,24 @@
             {{ session('error') }}
         </div>
     @endif
+    <div x-data="{ show: false, message: '', type: 'success' }" x-on:notify.window="
+        show = true;
+        message = $event.detail.message;
+        type = $event.detail.type;
+        setTimeout(() => show = false, 4000);
+    " class="fixed top-5 right-5 z-50">
+        <template x-if="show">
+            <div x-transition :class="{
+                'bg-emerald-600': type === 'success',
+                'bg-red-600': type === 'error',
+                'bg-blue-600': type === 'info'
+            }" class="text-white px-4 py-2 rounded-lg shadow-lg font-medium">
+                <span x-text="message"></span>
+            </div>
+        </template>
+    </div>
+
+
 
     <div class="grid grid-cols-12 gap-6">
         <!-- Left Sidebar - Classes -->
@@ -28,17 +46,38 @@
                 <div class="p-4 space-y-2 max-h-96 overflow-y-auto">
                     @foreach($this->classes as $class)
                         <button wire:click="selectClass({{ $class->id }})"
-                            class="w-full text-left p-3 rounded-lg border-2 transition-all
-                                                                                                                                                                                                                                                                                    {{ $selectedClassId == $class->id ? 'border-emerald-500 bg-emerald-50' : 'border-gray-200 hover:border-emerald-200' }}">
-                            <div class="font-semibold text-gray-900">{{ $class->full_name }}</div>
-                            <div class="text-sm text-gray-600">{{ $class->active_students_count }} élèves</div>
+                            class="w-full text-left p-4 rounded-lg border-2 transition-all hover:shadow-md
+                                                                                                                                                                                                                                                                                                    {{ $selectedClassId == $class->id ? 'border-emerald-500 bg-emerald-50' : 'border-gray-200 hover:border-emerald-200' }}">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h3 class="font-semibold text-gray-900">{{ $class->full_name }}</h3>
+                                    <p class="text-sm text-gray-600">{{ $class->code }}</p>
+                                    <p class="text-xs text-gray-500 mt-1">
+                                        <span class="inline-flex items-center">
+                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z">
+                                                </path>
+                                            </svg>
+                                            {{ $class->active_students_count }} élèves
+                                        </span>
+                                    </p>
+                                </div>
+                                @if($selectedClassId == $class->id)
+                                    <svg class="w-6 h-6 text-emerald-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd"
+                                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                            clip-rule="evenodd"></path>
+                                    </svg>
+                                @endif
+                            </div>
                         </button>
                     @endforeach
                 </div>
             </div>
 
             <!-- Subjects -->
-            @if($selectedClassId && $this->subjects->count() > 0)
+            @if($this->selectedClassId && $this->subjects->count() > 0)
                 <div class="bg-white rounded-xl shadow-sm border border-gray-200">
                     <div class="p-4 border-b border-gray-200">
                         <h3 class="font-semibold text-gray-900">Matières</h3>
@@ -47,7 +86,7 @@
                         @foreach($this->subjects as $subject)
                             <button wire:click="selectSubject({{ $subject->id }})"
                                 class="w-full text-left p-3 rounded-lg border-2 transition-all
-                                                                                                                                                                                                                                                                                                         {{ $selectedSubjectId == $subject->id ? 'border-emerald-500 bg-emerald-50' : 'border-gray-200 hover:border-emerald-200' }}">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                {{ $selectedSubjectId == $subject->id ? 'border-emerald-500 bg-emerald-50' : 'border-gray-200 hover:border-emerald-200' }}">
                                 <div class="font-semibold text-gray-900">{{ $subject->name }}</div>
                                 <div class="text-xs text-gray-600">Coef. {{ $subject->coefficient }}</div>
                             </button>
@@ -85,17 +124,18 @@
                                 @foreach($this->evaluations as $evaluation)
                                     <div wire:click="selectEvaluation({{ $evaluation->id }})"
                                         class="p-4 border-2 rounded-lg cursor-pointer transition-all hover:shadow-md
-                                                                                                                                                                                                                                                                                     {{ $selectedEvaluationId == $evaluation->id ? 'border-emerald-500 bg-emerald-50' : 'border-gray-200 hover:border-emerald-200' }}">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    {{ $selectedEvaluationId == $evaluation->id ? 'border-emerald-500 bg-emerald-50' : 'border-gray-200 hover:border-emerald-200' }}">
                                         <div class="flex items-start justify-between mb-2">
                                             <div class="flex-1">
                                                 <h3 class="font-semibold text-gray-900">{{ $evaluation->title }}</h3>
                                                 <p class="text-sm text-gray-600 mt-1">
-                                                    {{ \Carbon\Carbon::parse($evaluation->date)->format('d/m/Y') ?? '-'}}
+                                                    {{ \Carbon\Carbon::parse($evaluation->date)->format('d/m/Y') }}
+
                                                 </p>
                                             </div>
                                             <span
                                                 class="px-2 py-1 rounded text-xs font-medium
-                                                                                                                                                                                                 {{ $evaluation->type == 'examen' ? 'bg-red-100 text-red-800' : ($evaluation->type == 'composition' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800') }}">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            {{ $evaluation->type == 'examen' ? 'bg-red-100 text-red-800' : ($evaluation->type == 'composition' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800') }}">
                                                 {{ ucfirst($evaluation->type) }}
                                             </span>
                                         </div>
@@ -141,7 +181,7 @@
                     <div class="bg-white rounded-xl shadow-sm border border-gray-200">
                         <!-- Stats -->
                         <div class="p-6 bg-gradient-to-r from-emerald-500 to-teal-600 text-white">
-                            <h3 class="text-xl font-bold mb-4">{{ $selectedEvaluation->title }}</h3>
+                            <h3 class="text-xl font-bold mb-4">{{ $this->selectedEvaluation->title }}</h3>
                             <div class="grid grid-cols-5 gap-4">
                                 <div class="text-center">
                                     <div class="text-2xl font-bold">{{ $stats['total_students'] }}</div>
@@ -170,21 +210,22 @@
                         <div class="p-4 border-b border-gray-200 bg-gray-50">
                             <div class="flex items-center justify-between">
                                 <div class="text-sm text-gray-600">
-                                    Note sur {{ $selectedEvaluation->max_score }} • Coefficient
-                                    {{ $selectedEvaluation->coefficient }}
+                                    Note sur {{ $this->selectedEvaluation->max_score }} • Coefficient
+                                    {{ $evaluation->subject->coefficient }}
                                 </div>
                                 <div class="flex space-x-2">
-                                    @if(!$selectedEvaluation->is_published)
+                                    @if(!$this->selectedEvaluation->is_published)
                                         <button wire:click="publishEvaluation"
                                             class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">
                                             📢 Publier
                                         </button>
                                     @endif
+
                                     <button wire:click="saveAllGrades"
                                         class="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors text-sm font-medium">
                                         💾 Tout enregistrer
                                     </button>
-                                    <button wire:click="deleteEvaluation({{ $selectedEvaluation->id }})"
+                                    <button type="button" wire:click="deleteEvaluation({{ $this->selectedEvaluation->id }})"
                                         wire:confirm="Êtes-vous sûr de vouloir supprimer cette évaluation ?"
                                         class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium">
                                         🗑️ Supprimer
@@ -218,7 +259,8 @@
                                                 <div class="font-semibold text-gray-900">{{ $student->full_name }}</div>
                                             </td>
                                             <td class="px-6 py-4">
-                                                <input type="number" step="0.25" min="0" max="{{ $selectedEvaluation->max_score }}"
+                                                <input type="number" step="0.25" min="0"
+                                                    max="{{ $this->selectedEvaluation->max_score }}"
                                                     wire:model="grades.{{ $student->id }}.score" placeholder="0"
                                                     class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500">
                                             </td>
@@ -260,7 +302,7 @@
     @if($showEvaluationModal)
         <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
             wire:click="closeEvaluationModal">
-            <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full" wire:click.stop>
+            <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full" @click.stop>
                 <div class="p-6 border-b border-gray-200">
                     <div class="flex items-center justify-between">
                         <h3 class="text-xl font-bold text-gray-900">Nouvelle Évaluation</h3>
@@ -272,82 +314,115 @@
                         </button>
                     </div>
                 </div>
-
-                <form wire:submit.prevent="save" class="p-6 space-y-4">
+                <form wire:submit.prevent="createEvaluation" class="space-y-5">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Titre *</label>
-                        <input type="text" wire:model="evaluationTitle"
-                            class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500"
-                            placeholder="Ex: Devoir 1, Examen final...">
-                        @error('evaluationTitle') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
+                        <label class="block text-sm font-medium text-gray-700">Nom</label>
+                        <input wire:model="name" type="text"
+                            class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-emerald-500 focus:border-emerald-500" />
+                        @error('name') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                     </div>
 
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">Description</label>
-                        <textarea wire:model="evaluationDescription" rows="3"
-                            class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500"
-                            placeholder="Description optionnelle..."></textarea>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Type *</label>
-                            <select wire:model="evaluationType"
-                                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500">
-                                <option value="">Sélectionnez un type</option>
+                            <label class="block text-sm font-medium text-gray-700">Matière</label>
+                            <select wire:model="subjectId"
+                                class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-emerald-500 focus:border-emerald-500">
+                                <option value="">-- Sélectionner --</option>
+                                @foreach ($this->subjects as $subject)
+                                    <option value="{{ $subject->id }}">{{ $subject->name }}</option>
+                                @endforeach
+                            </select>
+                            @error('subjectId') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Classe</label>
+                            <select wire:model="classId"
+                                class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-emerald-500 focus:border-emerald-500">
+                                <option value="">-- Sélectionner --</option>
+                                @foreach ($this->classes as $class)
+                                    <option value="{{ $class->id }}">{{ $class->name }}</option>
+                                @endforeach
+                            </select>
+                            @error('classId') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Année académique</label>
+                            <select wire:model="academicYearId"
+                                class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-emerald-500 focus:border-emerald-500">
+                                <option value="">-- Sélectionner --</option>
+                                @foreach ($this->academicYears as $year)
+                                    <option value="{{ $year->id }}">{{ $year->name }}</option>
+                                @endforeach
+                            </select>
+                            @error('academicYearId') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Type</label>
+                            <select wire:model="type"
+                                class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-emerald-500 focus:border-emerald-500">
                                 <option value="quiz">Quiz</option>
                                 <option value="test">Test</option>
                                 <option value="exam">Examen</option>
                                 <option value="assignment">Devoir</option>
                             </select>
-                            @error('evaluationType') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
                         </div>
 
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Date *</label>
-                            <input type="date" wire:model="evaluationDate"
-                                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500">
-                            @error('evaluationDate') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
+                            <label class="block text-sm font-medium text-gray-700">Date</label>
+                            <input wire:model="date" type="date"
+                                class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-emerald-500 focus:border-emerald-500" />
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Note maximale</label>
+                            <input wire:model="maxScore" type="number" step="0.5"
+                                class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-emerald-500 focus:border-emerald-500" />
+                            @error('maxScore') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-3 gap-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Note max *</label>
-                            <input type="number" wire:model="maxScore" min="10" max="50"
-                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500">
-                            @error('maxScore') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
+                            <label class="block text-sm font-medium text-gray-700">Durée (minutes)</label>
+                            <input wire:model="durationMinutes" type="number"
+                                class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-emerald-500 focus:border-emerald-500" />
                         </div>
 
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Status *</label>
-                            <select wire:model="evaluationStatus"
-                                class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-emerald-500">
-                                <option value="">Sélectionnez un type</option>
-                                <option value="draft">draft</option>
-                                <option value="published">Test</option>
-                                <option value="completed">Examen</option>
+                            <label class="block text-sm font-medium text-gray-700">Statut</label>
+                            <select wire:model="status"
+                                class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-emerald-500 focus:border-emerald-500">
+                                <option value="draft">Brouillon</option>
+                                <option value="published">Publié</option>
+                                <option value="completed">Terminé</option>
                             </select>
-                            @error('evaluationStatus') <span class="text-red-600 text-sm">{{ $message }}</span> @enderror
                         </div>
-
                     </div>
-                    <input type="hidden" wire:model="classId">
-                    <input type="hidden" wire:model="subjectId">
-                    <input type="hidden" wire:model="teacherId">
-                    <input type="hidden" wire:model="academicYearId">
 
-                    <div class="flex justify-end space-x-3 pt-4 border-t border-gray-200">
-                        <button type="button" wire:click="closeEvaluationModal"
-                            class="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
-                            Annuler
-                        </button>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700">Description</label>
+                        <textarea wire:model="description" rows="3"
+                            class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-emerald-500 focus:border-emerald-500"></textarea>
+                    </div>
+
+                    <div class="pt-4 flex justify-end">
                         <button type="submit"
-                            class="px-6 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-medium">
-                            Créer l'évaluation
+                            class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-6 py-2 rounded-lg shadow">
+                            Enregistrer
                         </button>
                     </div>
                 </form>
+
+
+
+
+
             </div>
         </div>
     @endif
