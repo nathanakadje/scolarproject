@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Professor;
 
+use Livewire\Component;
 use App\Models\Teacher;
 use App\Models\ClassModel;
 use App\Models\Subject;
@@ -9,13 +10,14 @@ use App\Models\AcademicYear;
 use App\Models\Evaluation;
 use App\Models\Grade;
 use App\Models\Student;
-use Livewire\Component;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Computed;
+use App\Traits\HasToastNotifications;
 
 #[Layout('layouts.professor-layout')]
 class GradeManagement extends Component
 {
+    use HasToastNotifications;
     public $name;
     public $subjectId;
     public $classId;
@@ -213,17 +215,6 @@ class GradeManagement extends Component
             'duration_minutes' => $this->durationMinutes,
             'description' => $this->description,
             'status' => $this->status,
-            // 'name' => $this->name,
-            // 'subjectId' => $this->selectedSubjectId,
-            // 'classId' => $this->selectedClassId,
-            // 'academicYearId' => $this->academicYearId,
-            // 'teacherId' => $this->teacherId,
-            // 'type' => $this->type,
-            // 'date' => $this->date,
-            // 'maxScore' => $this->maxScore,
-            // 'durationMinutes' => $this->durationMinutes,
-            // 'description' => $this->evaluationDescription,
-            // 'status' => $this->status,
         ]);
 
         $this->selectedEvaluationId = $evaluation->id;
@@ -233,7 +224,7 @@ class GradeManagement extends Component
         session()->flash('success', 'Évaluation créée avec succès');
     }
 
-    public function saveGrade($studentId)
+    public function saveGrade($studentId, $reload = true)
     {
 
         $gradeData = $this->grades[$studentId] ?? null;
@@ -248,42 +239,51 @@ class GradeManagement extends Component
             session()->flash('error', "La note doit être entre 0 et {$this->selectedEvaluation->max_score}");
             return;
         }
+        try {
+            Grade::updateOrCreate(
+                [
+                    'student_id' => $studentId,
+                    'evaluation_id' => $this->selectedEvaluationId,
+                ],
+                [
+                    'score' => $score,
+                    'feedback' => $gradeData['feedback'] ?? null,
+                    'graded_at' => now(),
+                    'graded_by' => $this->teacher->id,
+                ]
+            );
 
-        Grade::updateOrCreate(
-            [
-                'student_id' => $studentId,
-                'evaluation_id' => $this->selectedEvaluationId,
-            ],
-            [
-                'score' => $score,
-                'feedback' => $gradeData['feedback'] ?? null,
-                'graded_at' => now(),
-                'graded_by' => $this->teacher->id,
-            ]
-        );
+            if ($reload) {
+                $this->loadGrades();
+            }
+            $this->toastsuccess(" Note enregistrée avec succès");
+        } catch (\Exception $e) {
+            $this->toasterror(" Une erreur est survenue lors de l'enregistrement: ");
 
-        $this->loadGrades();
-
-        $this->dispatch('grade-saved', [
-            'message' => 'Note enregistrée avec succès'
-        ]);
+        }
+        // session()->flash('success', " note enregistrée(s) avec succès");
     }
+
 
     public function saveAllGrades()
     {
-        $savedCount = 0;
+        try {
+            $savedCount = 0;
 
-        foreach ($this->grades as $studentId => $gradeData) {
-            if ($gradeData['score'] !== '') {
-                $this->saveGrade($studentId);
-                $savedCount++;
+            foreach ($this->grades as $studentId => $gradeData) {
+                if ($gradeData['score'] !== '') {
+                    // ⚠️ Appel de saveGrade SANS loadGrades automatique
+                    $this->saveGrade($studentId, $reload = false);
+                    $savedCount++;
+                }
             }
+            $this->loadGrades();
+
+            $this->toastsuccess(" {$savedCount} note(s) enregistrée(s) avec succès");
+        } catch (\Exception $e) {
+            $this->toasterror(" Une erreur est survenue lors de l'enregistrement: ");
+
         }
-        // 🔥 Envoi d'un événement Livewire
-        $this->dispatch('notify', [
-            'type' => 'success',
-            'message' => "{$savedCount} note(s) enregistrée(s) avec succès"
-        ]);
         // session()->flash('success', "{$savedCount} note(s) enregistrée(s) avec succès");
     }
 

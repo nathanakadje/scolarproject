@@ -21,7 +21,8 @@ class Evaluation extends Model
         'max_score',
         'duration_minutes',
         'description',
-        'status'
+        'status',
+        'is_published'
     ];
 
     protected $casts = [

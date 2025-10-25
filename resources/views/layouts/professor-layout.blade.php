@@ -9,6 +9,17 @@
     <title>{{ $title ?? 'Espace Professeur' }} - Plateforme Scolaire</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"
+        integrity="sha512-VEd+nq25CkR676O+pLBnDW09R7VQX9Mdiij052gVCp5yVH3jGtH70Ho/UUv4mJDsEdTvqRCFZg0NKGiojGnUCw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css"
+        integrity="sha512-3pIirOrwegjM6erE5gPSwkUzO+3cTjpnV9lexlNZqvupR64iZBnOOTiiLPb9M36zpMScbmUNIcHUqKD47M719g=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" rel="stylesheet">
+
 </head>
 
 <body class="bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 min-h-screen">
@@ -209,8 +220,31 @@
             </footer>
         </div>
     </div>
-    <script src="https://unpkg.com/alpinejs@3.15.0/dist/cdn.min.js" defer></script>
-    @livewireScripts
+
 </body>
+@livewireScripts
+
+<script type="text/javascript">
+    document.addEventListener("toastr.success", event => {
+
+        toastr.success(event.detail.message);
+    });
+
+    document.addEventListener("toastr.error", event => {
+
+        toastr.error(event.detail.message);
+    });
+
+    document.addEventListener("toastr.warning", event => {
+
+        toastr.warning(event.detail.message);
+    });
+
+    document.addEventListener("toastr.info", event => {
+
+        toastr.info(event.detail.message);
+    });
+
+</script>
 
 </html>

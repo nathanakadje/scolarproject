@@ -17,22 +17,6 @@
             {{ session('error') }}
         </div>
     @endif
-    <div x-data="{ show: false, message: '', type: 'success' }" x-on:notify.window="
-        show = true;
-        message = $event.detail.message;
-        type = $event.detail.type;
-        setTimeout(() => show = false, 4000);
-    " class="fixed top-5 right-5 z-50">
-        <template x-if="show">
-            <div x-transition :class="{
-                'bg-emerald-600': type === 'success',
-                'bg-red-600': type === 'error',
-                'bg-blue-600': type === 'info'
-            }" class="text-white px-4 py-2 rounded-lg shadow-lg font-medium">
-                <span x-text="message"></span>
-            </div>
-        </template>
-    </div>
 
 
 
@@ -47,7 +31,7 @@
                     @foreach($this->classes as $class)
                         <button wire:click="selectClass({{ $class->id }})"
                             class="w-full text-left p-4 rounded-lg border-2 transition-all hover:shadow-md
-                                                                                                                                                                                                                                                                                                    {{ $selectedClassId == $class->id ? 'border-emerald-500 bg-emerald-50' : 'border-gray-200 hover:border-emerald-200' }}">
+                                                                                                                                                                                                                                                                                                                                                                        {{ $selectedClassId == $class->id ? 'border-emerald-500 bg-emerald-50' : 'border-gray-200 hover:border-emerald-200' }}">
                             <div class="flex items-center justify-between">
                                 <div>
                                     <h3 class="font-semibold text-gray-900">{{ $class->full_name }}</h3>
@@ -86,7 +70,7 @@
                         @foreach($this->subjects as $subject)
                             <button wire:click="selectSubject({{ $subject->id }})"
                                 class="w-full text-left p-3 rounded-lg border-2 transition-all
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                {{ $selectedSubjectId == $subject->id ? 'border-emerald-500 bg-emerald-50' : 'border-gray-200 hover:border-emerald-200' }}">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        {{ $selectedSubjectId == $subject->id ? 'border-emerald-500 bg-emerald-50' : 'border-gray-200 hover:border-emerald-200' }}">
                                 <div class="font-semibold text-gray-900">{{ $subject->name }}</div>
                                 <div class="text-xs text-gray-600">Coef. {{ $subject->coefficient }}</div>
                             </button>
@@ -124,7 +108,7 @@
                                 @foreach($this->evaluations as $evaluation)
                                     <div wire:click="selectEvaluation({{ $evaluation->id }})"
                                         class="p-4 border-2 rounded-lg cursor-pointer transition-all hover:shadow-md
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    {{ $selectedEvaluationId == $evaluation->id ? 'border-emerald-500 bg-emerald-50' : 'border-gray-200 hover:border-emerald-200' }}">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                {{ $selectedEvaluationId == $evaluation->id ? 'border-emerald-500 bg-emerald-50' : 'border-gray-200 hover:border-emerald-200' }}">
                                         <div class="flex items-start justify-between mb-2">
                                             <div class="flex-1">
                                                 <h3 class="font-semibold text-gray-900">{{ $evaluation->title }}</h3>
@@ -135,7 +119,7 @@
                                             </div>
                                             <span
                                                 class="px-2 py-1 rounded text-xs font-medium
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            {{ $evaluation->type == 'examen' ? 'bg-red-100 text-red-800' : ($evaluation->type == 'composition' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800') }}">
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        {{ $evaluation->type == 'examen' ? 'bg-red-100 text-red-800' : ($evaluation->type == 'composition' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800') }}">
                                                 {{ ucfirst($evaluation->type) }}
                                             </span>
                                         </div>
@@ -314,7 +298,7 @@
                         </button>
                     </div>
                 </div>
-                <form wire:submit.prevent="createEvaluation" class="space-y-5">
+                <form wire:submit.prevent="createEvaluation" class=" p-6 space-y-5">
                     <div>
                         <label class="block text-sm font-medium text-gray-700">Nom</label>
                         <input wire:model="name" type="text"
