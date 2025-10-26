@@ -23,6 +23,8 @@ class RedirectBasedOnRole
                 return redirect('/admin');
             } elseif ($user->isTeacher()) {
                 return redirect('/teacher/dashboard');
+            } elseif ($user->isStudent()) {
+                return redirect('/student/dashboard');
             }
         }
         // if (Auth::check()) {

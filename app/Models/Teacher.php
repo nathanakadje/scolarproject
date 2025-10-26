@@ -40,6 +40,27 @@ class Teacher extends Model
     /*
     User relation (one-to-one) add user_id in teachers table
     */
+    protected static function booted()
+    {
+        static::creating(function ($teacher) {
+            // Vérifie si un user n’existe pas déjà avec cet email
+            $existingUser = \App\Models\User::where('email', $teacher->email)->first();
+
+            if (!$existingUser) {
+                $user = \App\Models\User::create([
+                    'name' => $teacher->first_name . ' ' . $teacher->last_name,
+                    'email' => $teacher->email,
+                    'password' => bcrypt('password'), // tu peux mettre un mot de passe par défaut
+                    'role' => 'teacher', // si ton user a un champ rôle
+                ]);
+
+                $teacher->user_id = $user->id;
+            } else {
+                $teacher->user_id = $existingUser->id;
+            }
+        });
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);

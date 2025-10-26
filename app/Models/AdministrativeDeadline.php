@@ -29,6 +29,15 @@ class AdministrativeDeadline extends Model
         'completion_status' => 'array',
     ];
 
+    protected static function booted()
+    {
+        static::creating(function ($deadline) {
+            if (auth()->check()) {
+                $deadline->created_by = auth()->id();
+            }
+        });
+    }
+
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');

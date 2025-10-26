@@ -7,8 +7,7 @@ use App\Livewire\Professor\TeacherClassManagement;
 use Illuminate\Support\Facades\Route;
 use App\Livewire\Professor\ProfDashboard;
 use App\Livewire\Student\StudentDashboard;
-use App\Livewire\Professor\Calendar;
-use App\Livewire\Professor\Messages;
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -33,7 +32,7 @@ Route::middleware([
     Route::get('/teacher/student', MyStudents::class)->name('professor.students');
     Route::get('/teacher/class', TeacherClassManagement::class)->name('professor.classes');
     Route::get('/teacher/calendar', ProfessorCalendar::class)->name('professor.calendar');
-    Route::get('/student/dashboard', StudentDashboard::class);
+    Route::get('/student/dashboard', StudentDashboard::class)->name('student.dashboard');
 
 });
 

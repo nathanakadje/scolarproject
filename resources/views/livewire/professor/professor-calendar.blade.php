@@ -99,7 +99,7 @@
                 @foreach($calendarData as $week)
                 <div class="grid grid-cols-7 border-b border-gray-200 last:border-b-0">
                     @foreach($week as $day)
-                    <div wire:click="selectDate('{{ $day['date'] }}')" class="min-h-[120px] border-r border-gray-200 last:border-r-0 p-2 {{ $day['isCurrentMonth'] ? 'bg-white' : 'bg-gray-50' }} {{ $day['isToday'] ? 'ring-2 ring-emerald-500 ring-inset' : '' }} {{ $selectedDate === $day['date'] ? 'ring-2 ring-blue-300 ring-inset' : '' }} hover:bg-gray-50 transition-colors  duration-100 ease-in-out cursor-pointer">
+                    <div wire:click="selectDate('{{ $day['date'] }}')" class="min-h-[120px] border-r border-gray-200 last:border-r-0 p-2 {{ $day['isCurrentMonth'] ? 'bg-white' : 'bg-gray-50' }} {{ $day['isToday'] ? 'ring-2 ring-emerald-500 ring-inset' : '' }} {{ $selectedDate === $day['date'] ? 'ring-2 ring-blue-500 ring-inset' : '' }} hover:bg-gray-50 transition-colors  duration-100 ease-in-out cursor-pointer">
                         <div class="flex items-center justify-between mb-2">
                             <span class="text-sm font-medium {{ $day['isToday'] ? 'bg-emerald-600 text-white w-7 h-7 rounded-full flex items-center justify-center' : ($day['isCurrentMonth'] ? 'text-gray-900' : 'text-gray-400') }}">
                                 {{ $day['day'] }}
