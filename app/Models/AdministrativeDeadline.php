@@ -54,9 +54,37 @@ class AdministrativeDeadline extends Model
 
     public function markCompletedBy($teacherId): void
     {
-        $status = $this->completion_status ?? [];
-        $status[$teacherId] = now()->toDateTimeString();
-        $this->update(['completion_status' => $status]);
+        try {
+            // Récupérer le statut actuel
+            $status = $this->completion_status;
+
+            // Initialiser si null ou non-array
+            if ($status === null || !is_array($status)) {
+                $status = [];
+            }
+
+            // Vérifier que teacherId est valide
+            if (!is_numeric($teacherId) && !is_string($teacherId)) {
+                throw new \InvalidArgumentException('Teacher ID must be numeric or string');
+            }
+
+            // Mettre à jour le statut
+            $status[(string) $teacherId] = now()->toDateTimeString();
+
+            // Sauvegarder
+            $this->update(['completion_status' => $status]);
+
+        } catch (\Exception $e) {
+            \Log::error('Error marking completion status', [
+                'model_id' => $this->id,
+                'teacher_id' => $teacherId,
+                'error' => $e->getMessage()
+            ]);
+
+        }
+        // $status = $this->completion_status ?? [];
+        // $status[$teacherId] = now()->toDateTimeString();
+        // $this->update(['completion_status' => $status]);
     }
 
     public function getCategoryLabel(): string
@@ -76,6 +104,7 @@ class AdministrativeDeadline extends Model
     {
         return Carbon::parse($this->deadline_date)->isPast();
     }
+
 
     public function getDaysRemaining(): int
     {

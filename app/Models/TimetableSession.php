@@ -86,4 +86,21 @@ class TimetableSession extends Model
             default => $this->session_type,
         };
     }
+    // Propriété calculée pour le titre affiché dans le calendrier
+    public function getTitleAttribute()
+    {
+        return $this->subject->name . ' (' . $this->classe->name . ')';
+    }
+
+    // Propriété calculée pour la couleur (exemple simple)
+    public function getColorAttribute()
+    {
+        return '#10B981'; // tu peux adapter par matière ou type de séance
+    }
+
+    // Propriété calculée pour l'emplacement
+    public function getLocationAttribute()
+    {
+        return $this->room . ($this->building ? ' - ' . $this->building : '');
+    }
 }

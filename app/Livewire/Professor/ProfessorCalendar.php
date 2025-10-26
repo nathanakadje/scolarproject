@@ -16,6 +16,8 @@ use Carbon\Carbon;
 #[Layout('layouts.professor-layout')]
 class ProfessorCalendar extends Component
 {
+    public $selectedDate = null;
+
     public $teacher;
 
     // View mode
@@ -81,7 +83,10 @@ class ProfessorCalendar extends Component
             'pedagogical'
         ];
     }
-
+    public function selectDate($date)
+    {
+        $this->selectedDate = $date;
+    }
     #[Computed]
     public function classes()
     {

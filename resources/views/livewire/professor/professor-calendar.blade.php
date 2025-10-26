@@ -9,7 +9,7 @@
             <div class="flex items-center space-x-3">
                 <button 
                     wire:click="exportCalendar('ics')"
-                    class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors flex items-center space-x-2">
+                    class="px-4 py-2 bg-indigo-100 text-gray-600 rounded-lg hover:bg-gray-200 transition-colors flex items-center space-x-2">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                     </svg>
@@ -99,7 +99,7 @@
                 @foreach($calendarData as $week)
                 <div class="grid grid-cols-7 border-b border-gray-200 last:border-b-0">
                     @foreach($week as $day)
-                    <div class="min-h-[120px] border-r border-gray-200 last:border-r-0 p-2 {{ $day['isCurrentMonth'] ? 'bg-white' : 'bg-gray-50' }} {{ $day['isToday'] ? 'ring-2 ring-emerald-500 ring-inset' : '' }} hover:bg-gray-50 transition-colors">
+                    <div wire:click="selectDate('{{ $day['date'] }}')" class="min-h-[120px] border-r border-gray-200 last:border-r-0 p-2 {{ $day['isCurrentMonth'] ? 'bg-white' : 'bg-gray-50' }} {{ $day['isToday'] ? 'ring-2 ring-emerald-500 ring-inset' : '' }} {{ $selectedDate === $day['date'] ? 'ring-2 ring-blue-300 ring-inset' : '' }} hover:bg-gray-50 transition-colors  duration-100 ease-in-out cursor-pointer">
                         <div class="flex items-center justify-between mb-2">
                             <span class="text-sm font-medium {{ $day['isToday'] ? 'bg-emerald-600 text-white w-7 h-7 rounded-full flex items-center justify-center' : ($day['isCurrentMonth'] ? 'text-gray-900' : 'text-gray-400') }}">
                                 {{ $day['day'] }}
@@ -190,7 +190,7 @@
                                             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
                                             </svg>
-                                            {{ $event->classe->full_name }}
+                                            {{ $event->classe->name }}
                                         </span>
                                         @endif
                                     </div>
@@ -210,6 +210,104 @@
                 @endforelse
             </div>
             @endif
+
+            @if($viewMode === 'week')
+<div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+
+    {{-- En-tête semaine --}}
+    <div class="p-4 bg-gradient-to-r from-emerald-50 to-teal-50 border-b border-gray-200">
+        <h3 class="font-bold text-gray-900">
+            Emploi du temps de la semaine du 
+            {{ \Carbon\Carbon::parse($this->getViewStartDate())->locale('fr')->isoFormat('D MMMM') }} 
+            au {{ \Carbon\Carbon::parse($this->getViewEndDate())->locale('fr')->isoFormat('D MMMM YYYY') }}
+        </h3>
+        <p class="text-sm text-gray-600">{{ $this->timetableSessions()->count() }} séance(s)</p>
+    </div>
+
+    {{-- Grille de la semaine --}}
+    <div class="overflow-x-auto">
+        <div class="inline-block min-w-full align-middle">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead>
+                    <tr class="bg-gray-50">
+                        <th class="sticky left-0 bg-gray-50 px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider w-20">
+                            Heure
+                        </th>
+                        @php
+                            $days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+                        @endphp
+                        @foreach($days as $day)
+                            <th class="px-4 py-3 text-center text-xs font-semibold uppercase tracking-wider w-1/7">
+                                {{ ucfirst($day) }}
+                            </th>
+                        @endforeach
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    @php
+                        $hours = range(7, 19);
+                        $sessions = $this->timetableSessions();
+                    @endphp
+
+                    @foreach($hours as $hour)
+                        <tr class="hover:bg-gray-50">
+                            <td class="sticky left-0 bg-white px-4 py-3 text-sm text-gray-600 font-medium border-r border-gray-200">
+                                {{ sprintf('%02d:00', $hour) }}
+                            </td>
+
+                            @foreach($days as $day)
+                                <td class="px-2 py-2 align-top">
+                                    @php
+                                        $daySessions = $sessions->filter(function ($s) use ($day, $hour) {
+                                            $sessionHour = \Carbon\Carbon::parse($s->start_time)->hour;
+                                            return $s->day_of_week === $day && $sessionHour == $hour;
+                                        });
+                                    @endphp
+
+                                    @foreach($daySessions as $session)
+                                        <div class="w-full mb-1 p-2 rounded-lg text-left text-xs hover:shadow-md transition-all duration-200"
+                                            style="background-color: {{ $session->color }}20; border-left: 3px solid {{ $session->color }}">
+                                            <div class="font-semibold text-gray-900 truncate">
+                                                {{ $session->title }}
+                                            </div>
+                                            <div class="text-gray-600 mt-1">
+                                                {{ \Carbon\Carbon::parse($session->start_time)->format('H:i') }}
+                                                - {{ \Carbon\Carbon::parse($session->end_time)->format('H:i') }}
+                                            </div>
+                                            @if($session->location)
+                                                <div class="text-gray-500 mt-1 truncate flex items-center">
+                                                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+                                                    </svg>
+                                                    {{ $session->location }}
+                                                </div>
+                                            @endif
+                                        </div>
+                                    @endforeach
+                                </td>
+                            @endforeach
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {{-- Message si aucune séance --}}
+    @if($this->timetableSessions()->isEmpty())
+        <div class="p-12 text-center">
+            <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+            </svg>
+            <p class="text-gray-500">Aucune séance programmée cette semaine</p>
+        </div>
+    @endif
+</div>
+@endif
+
+
         </div>
 
         <!-- Sidebar -->
@@ -259,7 +357,7 @@
                         Échéances Administratives
                     </h3>
                 </div>
-                <div class="p-4 space-y-3 max-h-96 overflow-y-auto">
+                    <div class="p-4 space-y-3 max-h-96 overflow-y-auto">
                     @foreach($this->administrativeDeadlines as $deadline)
                     <div class="p-3 rounded-lg border-2 {{ $deadline->isPast() ? 'border-red-300 bg-red-50' : 'border-orange-200 bg-orange-50' }}">
                         <div class="flex items-start justify-between mb-2">
@@ -283,7 +381,7 @@
                             @endif
                         </div>
                         <div class="flex items-center justify-between text-xs">
-                            <span class="text-{{ $deadline->getPast() ? 'red' : 'orange' }}-700 font-medium">
+                            <span class="text-{{ $deadline->isPast() ? 'red' : 'orange' }}-700 font-medium">
                                {{ \Carbon\Carbon::parse($deadline->deadline_date)->format('d/m/Y') }}
                                 @if($deadline->deadline_time)
                                     à {{ \Carbon\Carbon::parse($deadline->deadline_time)->format('H:i') }}
