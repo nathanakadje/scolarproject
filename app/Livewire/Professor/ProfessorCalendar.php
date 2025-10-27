@@ -6,6 +6,7 @@ use App\Models\Teacher;
 use App\Models\CalendarEvent;
 use App\Models\TimetableSession;
 use App\Models\AdministrativeDeadline;
+use App\Traits\HasToastNotifications;
 use App\Models\Classe;
 use App\Models\Subject;
 use Livewire\Component;
@@ -16,6 +17,8 @@ use Carbon\Carbon;
 #[Layout('layouts.professor-layout')]
 class ProfessorCalendar extends Component
 {
+    use HasToastNotifications;
+
     public $selectedDate = null;
 
     public $teacher;
@@ -59,7 +62,8 @@ class ProfessorCalendar extends Component
         $this->teacher = Teacher::where('user_id', auth()->id())->first();
 
         if (!$this->teacher) {
-            session()->flash('error', 'Profil professeur non trouvé');
+            $this->toastsuccess(" Profil professeur non trouvé");
+            // session()->flash('error', 'Profil professeur non trouvé');
             return redirect()->route('professor.dashboard');
         }
 
@@ -300,11 +304,14 @@ class ProfessorCalendar extends Component
             $event = CalendarEvent::find($this->eventId);
             if ($event && $event->created_by === $this->teacher->user_id) {
                 $event->update($data);
-                session()->flash('success', 'Événement modifié avec succès');
+                $this->toastsuccess("Événement modifié avec succès");
+
+                // session()->flash('success', 'Événement modifié avec succès');
             }
         } else {
             CalendarEvent::create($data);
-            session()->flash('success', 'Événement créé avec succès');
+            $this->toastsuccess("Événement créé avec succès");
+            // session()->flash('success', 'Événement créé avec succès');
         }
 
         $this->closeEventModal();
@@ -316,6 +323,10 @@ class ProfessorCalendar extends Component
             ->find($eventId);
         $this->showDetailModal = true;
     }
+    public function confirmDelete($eventId)
+    {
+        $this->dispatch('confirm-delete', eventId: $eventId);
+    }
 
     public function deleteEvent($eventId)
     {
@@ -323,9 +334,11 @@ class ProfessorCalendar extends Component
 
         if ($event && $event->created_by === $this->teacher->user_id) {
             $event->delete();
-            session()->flash('success', 'Événement supprimé');
+            $this->dispatch('event-deleted', id: $eventId);
+            $this->toastsuccess(" Supprimé avec succès");
+        } else {
+            $this->toasterror(" Une erreur est survenue lors de la suppression ");
         }
-
         $this->closeDetailModal();
     }
 
@@ -386,7 +399,8 @@ class ProfessorCalendar extends Component
 
         if ($deadline) {
             $deadline->markCompletedBy($this->teacher->id);
-            session()->flash('success', 'Échéance marquée comme complétée');
+            $this->toastsuccess(" Échéance marquée comme complétée");
+            // session()->flash('success', 'Échéance marquée comme complétée');
         }
     }
 

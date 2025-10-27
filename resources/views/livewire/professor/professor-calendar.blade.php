@@ -774,8 +774,7 @@
             @if($selectedEvent->created_by === $teacher->user_id)
             <div class="p-6 border-t border-gray-200 flex items-center justify-end space-x-3">
                 <button 
-                    wire:click="deleteEvent({{ $selectedEvent->id }})"
-                    wire:confirm="Êtes-vous sûr de vouloir supprimer cet événement ?"
+                    wire:click="confirmDelete({{ $selectedEvent->id }})"
                     class="px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors font-medium">
                     🗑️ Supprimer
                 </button>
@@ -790,3 +789,27 @@
     </div>
     @endif
 </div>
+@script
+<script>
+    // Écouteur pour la confirmation
+   $wire.on('confirm-delete', event => {
+        Swal.fire({
+            title: "Es-tu sûr ?",
+            text: "Cette action est irréversible.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Oui, supprimer",
+            cancelButtonText: "Annuler"
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // ✅ Appelle la méthode Livewire deleteEvent
+                $wire.call('deleteEvent',  event.eventId);
+            }
+        });
+    });
+
+
+</script>
+@endscript
