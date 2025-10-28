@@ -3,6 +3,7 @@
 use App\Livewire\Professor\GradeManagement;
 use App\Livewire\Professor\MyStudents;
 use App\Livewire\Professor\ProfessorCalendar;
+use App\Livewire\Professor\ResourceManagement;
 use App\Livewire\Professor\TeacherClassManagement;
 use Illuminate\Support\Facades\Route;
 use App\Livewire\Professor\ProfDashboard;
@@ -32,8 +33,9 @@ Route::middleware([
     Route::get('/teacher/student', MyStudents::class)->name('professor.students');
     Route::get('/teacher/class', TeacherClassManagement::class)->name('professor.classes');
     Route::get('/teacher/calendar', ProfessorCalendar::class)->name('professor.calendar');
+    Route::get('/teacher/devoir', ResourceManagement::class)->name('professor.assignments');
     Route::get('/student/dashboard', StudentDashboard::class)->name('student.dashboard');
-
+    Route::get('/resources', ResourceManagement::class)->name('resources');
 });
 
 

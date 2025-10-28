@@ -85,61 +85,9 @@ class ClassModel extends Model
         return "{$this->first_name} {$this->last_name}";
     }
 
+    public function resources()
+    {
+        return $this->belongsToMany(Resource::class, 'resource_class')->withTimestamps();
+    }
 
-
-    // use HasFactory;
-
-    // protected $table = 'classes';
-
-    // protected $fillable = [
-    //     'name',
-    //     'code',
-    //     'academic_level_id',
-    //     'capacity',
-    //     'school_fees',
-    //     'is_active'
-    // ];
-
-    // protected $casts = [
-    //     'is_active' => 'boolean',
-    //     'school_fees' => 'decimal:2',
-    // ];
-
-    // // Relations
-    // public function academicLevel()
-    // {
-    //     return $this->belongsTo(AcademicLevel::class);
-    // }
-
-    // public function subjects()
-    // {
-    //     return $this->belongsToMany(Subject::class)->withPivot('hours_per_week');
-    // }
-
-    // public function enrollments()
-    // {
-    //     return $this->hasMany(Enrollment::class);
-    // }
-
-
-    // public function teacherAssignments()
-    // {
-    //     return $this->hasMany(TeacherClassAssignment::class);
-    // }
-
-    // // public function evaluations()
-    // // {
-    // //     return $this->hasMany(Evaluation::class);
-    // // }
-
-    // public function attendances()
-    // {
-    //     return $this->hasMany(Attendance::class);
-    // }
-
-    // // Accesseurs
-    // public function getFullNameAttribute()
-    // {
-    //     return $this->academicLevel->name . ' - ' . $this->name;
-    // }
 }

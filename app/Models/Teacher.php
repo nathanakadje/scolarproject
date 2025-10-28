@@ -127,56 +127,14 @@ class Teacher extends Model
     {
         return $this->first_name . ' ' . $this->last_name;
     }
+    public function resources()
+    {
+        return $this->hasMany(Resource::class);
+    }
 
+    public function resourceCategories()
+    {
+        return $this->hasMany(ResourceCategory::class);
+    }
 
-
-
-    //     use HasFactory;
-
-    //     protected $fillable = [
-//         'teacher_number',
-//         'first_name',
-//         'last_name',
-//         'birth_date',
-//         'gender',
-//         'phone',
-//         'email',
-//         'address',
-//         'qualification',
-//         'hire_date',
-//         'salary',
-//         'status',
-//         'photo',
-//         'specializations'
-//     ];
-
-    //     protected $casts = [
-//         'birth_date' => 'date',
-//         'hire_date' => 'date',
-//         'salary' => 'decimal:2',
-//         'specializations' => 'array',
-//     ];
-
-
-
-    //     // public function evaluations()
-//     // {
-//     //     return $this->hasMany(Evaluation::class);
-//     // }
-
-    //     // public function attendancesMarked()
-//     // {
-//     //     return $this->hasMany(Attendance::class, 'marked_by');
-//     // }
-
-    //     // public function gradesGiven()
-//     // {
-//     //     return $this->hasMany(Grade::class, 'graded_by');
-//     // }
-
-    //     // Accesseurs
-//     public function getFullNameAttribute()
-//     {
-//         return $this->first_name . ' ' . $this->last_name;
-//     }
 }
