@@ -45,7 +45,7 @@ class ClassModel extends Model
 
     public function teacherAssignments(): HasMany
     {
-        return $this->hasMany(TeacherClassAssignment::class);
+        return $this->hasMany(TeacherClassAssignment::class, 'class_id');
     }
     // public function students()
     // {
@@ -89,5 +89,12 @@ class ClassModel extends Model
     {
         return $this->belongsToMany(Resource::class, 'resource_class')->withTimestamps();
     }
+    public function assignments()
+    {
+        return $this->hasMany(Assignment::class, 'class_id');
+    }
+
+    // app/Models/ClassModel.php
+
 
 }

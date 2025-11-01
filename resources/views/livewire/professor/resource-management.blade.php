@@ -13,7 +13,7 @@
                     </div>
                     <span>Mes Ressources Pédagogiques</span>
                 </h1>
-                <p class="mt-2 text-gray-600">Gérez et partagez vos documents, liens et ressources avec vos élèves</p>
+                <!-- <p class="mt-2 text-gray-600">Gérez et partagez vos documents, liens et ressources avec vos élèves</p> -->
             </div>
 
             <div class="flex gap-2">

@@ -132,5 +132,18 @@ class Student extends Model
     {
         return $this->hasMany(ResourceNotification::class);
     }
+    public function assignmentSubmissions()
+    {
+        return $this->hasMany(AssignmentSubmission::class);
+    }
 
+    public function assignmentGroups()
+    {
+        return $this->belongsToMany(AssignmentGroup::class, 'assignment_group_members');
+    }
+
+    public function peerReviews()
+    {
+        return $this->hasMany(PeerReview::class, 'reviewer_id');
+    }
 }

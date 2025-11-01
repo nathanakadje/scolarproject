@@ -38,7 +38,12 @@ class Subject extends Model
     {
         return $this->hasMany(Attendance::class);
     }
-    // use HasFactory;
+    public function assignments()
+    {
+        return $this->hasMany(Assignment::class);
+    }
+    // use Ha
+    // sFactory;
 
     // protected $fillable = [
     //     'name',

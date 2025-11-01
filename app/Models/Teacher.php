@@ -136,5 +136,14 @@ class Teacher extends Model
     {
         return $this->hasMany(ResourceCategory::class);
     }
+    public function assignments()
+    {
+        return $this->hasMany(Assignment::class);
+    }
+
+    public function assignmentSubmissions()
+    {
+        return $this->hasMany(AssignmentSubmission::class, 'graded_by');
+    }
 
 }

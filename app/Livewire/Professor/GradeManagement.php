@@ -54,7 +54,7 @@ class GradeManagement extends Component
         $this->teacher = Teacher::where('user_id', auth()->id())->first();
 
         if (!$this->teacher) {
-            session()->flash('error', 'Profil professeur non trouvé');
+            $this->toasterror('Profil professeur non trouvé');
             return redirect()->route('professor.dashboard');
         }
         $this->teacherId = $this->teacher->id ?? null;

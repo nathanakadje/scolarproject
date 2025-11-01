@@ -33,7 +33,7 @@ class Grade extends Model
 
     public function evaluation(): BelongsTo
     {
-        return $this->belongsTo(Evaluation::class);
+        return $this->belongsTo(Evaluation::class, 'evaluation_id');
     }
 
     public function gradedBy(): BelongsTo

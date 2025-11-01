@@ -4,7 +4,7 @@
         <div class="flex items-center justify-between">
             <div>
                 <h1 class="text-3xl font-bold text-gray-900">Mes Étudiants</h1>
-                <p class="text-gray-600 mt-2">Vue d'ensemble de tous vos étudiants avec statistiques détaillées</p>
+                <!-- <p class="text-gray-600 mt-2">Vue d'ensemble de tous vos étudiants avec statistiques détaillées</p> -->
             </div>
             <div class="flex space-x-3">
                 <button wire:click="toggleViewMode"
@@ -251,7 +251,7 @@
                         <!-- Status Badge -->
                         <span
                             class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium
-                                                                                                                                                                                                                                                                                        {{ $student->status == 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
+                                                                                                                                                                                                                                                                                                {{ $student->status == 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' }}">
                             {{ ucfirst($student->status) }}
                         </span>
                     </div>
