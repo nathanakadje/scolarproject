@@ -6,6 +6,8 @@ use App\Livewire\Professor\MyStudents;
 use App\Livewire\Professor\ProfessorCalendar;
 use App\Livewire\Professor\ResourceManagement;
 use App\Livewire\Professor\TeacherClassManagement;
+use App\Livewire\Student\Calendar;
+use App\Livewire\Student\NotificationsPage;
 use Illuminate\Support\Facades\Route;
 use App\Livewire\Professor\ProfDashboard;
 use App\Livewire\Student\StudentDashboard;
@@ -36,9 +38,12 @@ Route::middleware([
     Route::get('/teacher/class', TeacherClassManagement::class)->name('professor.classes');
     Route::get('/teacher/calendar', ProfessorCalendar::class)->name('professor.calendar');
     Route::get('/teacher/devoir', ResourceManagement::class)->name('professor.assignments');
-    Route::get('/student/dashboard', StudentDashboard::class)->name('student.dashboard');
     Route::get('/resources', ResourceManagement::class)->name('resources');
     Route::get('/teacher/devoirs', AssignmentManagement::class)->name('professor.courses');
+    Route::get('/student/dashboard', StudentDashboard::class)->name('student.dashboard');
+    Route::get('/student/calendar', Calendar::class)->name('student.calendar');
+    Route::get('/notifications', NotificationsPage::class)->name('notifications');
+
 });
 
 

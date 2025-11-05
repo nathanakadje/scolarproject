@@ -39,6 +39,8 @@ class Student extends Model
     ];
     protected $appends = ['age'];
 
+
+
     public function getAgeAttribute()
     {
         // Force la conversion en Carbon si ce n'est pas déjà fait
@@ -55,8 +57,27 @@ class Student extends Model
             if (empty($student->student_number)) {
                 $student->student_number = 'STU' . now()->year . str_pad(Student::max('id') + 1, 4, '0', STR_PAD_LEFT);
             }
+            $existingUser = \App\Models\User::where('email', $student->email)->first();
+
+            if (!$existingUser) {
+                $user = \App\Models\User::create([
+                    'name' => $student->first_name . ' ' . $student->last_name,
+                    'email' => $student->email,
+                    'password' => bcrypt('password'), // tu peux mettre un mot de passe par défaut
+                    'role' => 'student', // si ton user a un champ rôle
+                ]);
+
+                $student->user_id = $user->id;
+            } else {
+                $student->user_id = $existingUser->id;
+            }
         });
     }
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
 
     // Relations
     public function parents(): BelongsToMany
@@ -145,5 +166,23 @@ class Student extends Model
     public function peerReviews()
     {
         return $this->hasMany(PeerReview::class, 'reviewer_id');
+    }
+
+    /**
+     * Get unread notifications for the student.
+     */
+    public function unreadNotifications(): HasMany
+    {
+        return $this->hasMany(Notification::class, 'notifiable_id')
+            ->where('notifiable_type', 'App\Models\Student')
+            ->whereNull('read_at');
+    }
+
+    /**
+     * Get unread notifications count.
+     */
+    public function getUnreadNotificationsCountAttribute(): int
+    {
+        return $this->unreadNotifications()->count();
     }
 }

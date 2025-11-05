@@ -73,7 +73,7 @@
                         Emploi du temps
                     </a>
 
-                    <a href="#"
+                    <a href="{{ route('student.calendar') }}"
                         class="flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-indigo-50 hover:text-indigo-600 transition-all {{ request()->routeIs('student.calendar') ? 'bg-indigo-50 text-indigo-600 font-semibold' : '' }}">
                         <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -92,6 +92,26 @@
                         </svg>
                         Messages
                         <span class="ml-auto bg-red-500 text-white text-xs px-2 py-1 rounded-full">3</span>
+                    </a>
+                    <a href="{{ route('notifications') }}"
+                        x-data="{ unreadCount: {{ auth()->user()->student->unreadNotifications()->count() }} }"
+                        @notification-updated.window="unreadCount = $event.detail.count"
+                        class="relative flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-indigo-50 hover:text-indigo-600 transition-all {{ request()->routeIs('notifications') ? 'bg-indigo-50 text-indigo-600 font-semibold' : '' }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-3" fill="none" viewBox="0 0 24 24"
+                            stroke-width="2" stroke="currentColor"
+                            class="w-6 h-6 text-gray-700 hover:text-emerald-600 transition">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M14.857 17.243A4.002 4.002 0 0112 20a4.002 4.002 0 01-2.857-2.757M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9z" />
+                        </svg>
+                        Notifications
+
+                        <!-- Badge de compteur -->
+                        <template x-if="unreadCount > 0">
+                            <span
+                                class="absolute right-4 top-1/2 -translate-y-1/2 w-6 h-6 bg-red-500 rounded-full text-xs text-white flex items-center justify-center font-semibold animate-pulse"
+                                x-text="unreadCount > 9 ? '9+' : unreadCount">
+                            </span>
+                        </template>
                     </a>
                 </nav>
 
@@ -141,7 +161,7 @@
                         <!-- Right Side -->
                         <div class="flex items-center space-x-4">
                             <!-- Notifications -->
-                            <button class="relative text-gray-600 hover:text-gray-900">
+                            <!-- <button class="relative text-gray-600 hover:text-gray-900">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9">
@@ -149,7 +169,7 @@
                                 </svg>
                                 <span
                                     class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">5</span>
-                            </button>
+                            </button> -->
 
                             <!-- Logout -->
                             <form method="POST" action="{{ route('logout') }}">

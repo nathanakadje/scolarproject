@@ -193,4 +193,90 @@ class CalendarEvent extends Model
 
         return sprintf('%dh%02d', $diff->h, $diff->i);
     }
+
+    protected static function booted()
+    {
+        static::created(function ($event) {
+            $event->createNotification();
+        });
+
+        static::updated(function ($event) {
+            if ($event->isDirty(['title', 'start_date', 'start_time', 'location'])) {
+                $event->updateNotification();
+            }
+        });
+
+        static::deleting(function ($event) {
+            $event->deleteNotification();
+        });
+    }
+
+    public function createNotification()
+    {
+        // Créer une notification pour chaque étudiant de la classe
+        $students = $this->classe->students;
+
+        foreach ($students as $student) {
+            Notification::create([
+                'notifiable_id' => $student->id,
+                'notifiable_type' => 'App\Models\Student',
+                'type' => 'calendar_event',
+                'title' => 'Nouvel événement : ' . $this->title,
+                'message' => $this->description ?? 'Un nouvel événement a été programmé.',
+                'data' => [
+                    'start_date' => $this->start_date,
+                    'start_time' => $this->start_time,
+                    'location' => $this->location,
+                    'subject_name' => $this->subject->name ?? null,
+                    'event_type' => $this->type,
+                ],
+                'related_id' => $this->id,
+                'related_type' => 'App\Models\CalendarEvent',
+                'priority' => $this->getNotificationPriority(),
+                'icon' => '📅',
+                'color' => '#3B82F6', // Bleu pour les événements
+            ]);
+        }
+    }
+
+    public function updateNotification()
+    {
+        // Mettre à jour les notifications existantes
+        Notification::where('related_id', $this->id)
+            ->where('related_type', 'App\Models\CalendarEvent')
+            ->update([
+                'title' => 'Événement modifié : ' . $this->title,
+                'message' => $this->description ?? 'Un événement a été modifié.',
+                'data' => [
+                    'start_date' => $this->start_date,
+                    'start_time' => $this->start_time,
+                    'location' => $this->location,
+                    'subject_name' => $this->subject->name ?? null,
+                    'event_type' => $this->type,
+                ],
+                'priority' => $this->getNotificationPriority(),
+            ]);
+    }
+
+    public function deleteNotification()
+    {
+        // Supprimer les notifications liées
+        Notification::where('related_id', $this->id)
+            ->where('related_type', 'App\Models\CalendarEvent')
+            ->delete();
+    }
+
+    private function getNotificationPriority()
+    {
+        // Déterminer la priorité selon la date
+        $daysUntilEvent = now()->diffInDays($this->start_date);
+
+        if ($daysUntilEvent <= 1) {
+            return 'urgent';
+        } elseif ($daysUntilEvent <= 3) {
+            return 'high';
+        } else {
+            return 'normal';
+        }
+    }
 }
