@@ -1,9 +1,9 @@
 <div>
     <!-- Header -->
-    <div class="mb-6">
+    <!-- <div class="mb-6">
         <h1 class="text-3xl font-bold text-gray-900 mb-2">📅 Mon Calendrier</h1>
         <p class="text-gray-600">Consultez tous vos événements, cours et devoirs à venir</p>
-    </div>
+    </div> -->
 
     <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
         <!-- Calendar Main -->

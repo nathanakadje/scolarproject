@@ -40,6 +40,10 @@ class AcademicYear extends Model
     {
         return $this->hasMany(Evaluation::class);
     }
+    public function timetableSessions(): HasMany
+    {
+        return $this->hasMany(TimetableSession::class, 'academic_year_id'); // Changé ici
+    }
     // use HasFactory;
 
     // protected $fillable = [

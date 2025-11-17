@@ -30,7 +30,8 @@ class Student extends Model
         'enrollment_date',
         'status',
         'medical_info',
-        'notes'
+        'notes',
+        'class_id'
     ];
 
     protected $casts = [
@@ -78,6 +79,17 @@ class Student extends Model
         return $this->belongsTo(User::class);
     }
 
+    // Relation directe avec la classe
+    public function classe(): BelongsTo
+    {
+        return $this->belongsTo(ClassModel::class, 'class_id');
+    }
+
+    // Alias pour compatibilité
+    public function getCurrentClassAttribute()
+    {
+        return $this->classe;
+    }
 
     // Relations
     public function parents(): BelongsToMany
@@ -139,10 +151,7 @@ class Student extends Model
             'academic_year_id'
         )->withPivot('class_id', 'status');
     }
-    public function classe(): BelongsTo
-    {
-        return $this->belongsTo(ClassModel::class, 'class_id');
-    }
+
 
     public function resources()
     {
@@ -185,4 +194,6 @@ class Student extends Model
     {
         return $this->unreadNotifications()->count();
     }
+
+
 }

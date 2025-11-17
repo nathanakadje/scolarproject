@@ -146,4 +146,5 @@ class Teacher extends Model
         return $this->hasMany(AssignmentSubmission::class, 'graded_by');
     }
 
+
 }

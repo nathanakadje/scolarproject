@@ -53,8 +53,8 @@
                         Mes Cours
                     </a>
 
-                    <a href="#"
-                        class="flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-indigo-50 hover:text-indigo-600 transition-all {{ request()->routeIs('student.grades') ? 'bg-indigo-50 text-indigo-600 font-semibold' : '' }}">
+                    <a href="{{ route('student.assignments') }}"
+                        class="flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-indigo-50 hover:text-indigo-600 transition-all {{ request()->routeIs('student.assignments') ? 'bg-indigo-50 text-indigo-600 font-semibold' : '' }}">
                         <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01">
@@ -63,7 +63,7 @@
                         Mes Notes
                     </a>
 
-                    <a href="#"
+                    <a href="{{ route('student.timetable') }}"
                         class="flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-indigo-50 hover:text-indigo-600 transition-all {{ request()->routeIs('student.timetable') ? 'bg-indigo-50 text-indigo-600 font-semibold' : '' }}">
                         <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -93,8 +93,10 @@
                         Messages
                         <span class="ml-auto bg-red-500 text-white text-xs px-2 py-1 rounded-full">3</span>
                     </a>
+
+
                     <a href="{{ route('notifications') }}"
-                        x-data="{ unreadCount: {{ auth()->user()->student->unreadNotifications()->count() }} }"
+                        x-data="{ unreadCount: {{ auth()->user()->student?->unreadNotifications()?->count() ?? 0 }} }"
                         @notification-updated.window="unreadCount = $event.detail.count"
                         class="relative flex items-center px-4 py-3 text-gray-700 rounded-lg hover:bg-indigo-50 hover:text-indigo-600 transition-all {{ request()->routeIs('notifications') ? 'bg-indigo-50 text-indigo-600 font-semibold' : '' }}">
                         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-3" fill="none" viewBox="0 0 24 24"

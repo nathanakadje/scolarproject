@@ -8,6 +8,7 @@ use Livewire\WithPagination;
 use App\Models\Notification;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\Layout;
+use App\Models\Student;
 
 #[Layout('layouts.student-layout')]
 class NotificationsPage extends Component
@@ -20,7 +21,9 @@ class NotificationsPage extends Component
 
     public function mount(): void
     {
-        $this->student = auth()->user()->student;
+        $this->student = Student::where('user_id', auth()->id())->first();
+        $this->currentDate = today()->format('Y-m-d');
+        // dd($this->student);
 
         if (!$this->student) {
             abort(403, 'Profil étudiant non trouvé');

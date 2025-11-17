@@ -18,7 +18,7 @@ class TimetableSession extends Model
         'building',
         'valid_from',
         'valid_until',
-        'academic_year',
+        'academic_year_id',
         'semester',
         'session_type',
         'is_active',
@@ -33,12 +33,19 @@ class TimetableSession extends Model
 
     public function teacher(): BelongsTo
     {
-        return $this->belongsTo(Teacher::class);
+        return $this->belongsTo(Teacher::class, 'teacher_id');
     }
-
+    public function academicYear(): BelongsTo
+    {
+        return $this->belongsTo(AcademicYear::class, 'academic_year_id');
+    }
     public function classe(): BelongsTo
     {
         return $this->belongsTo(ClassModel::class, 'class_id');
+    }
+    public function student(): BelongsTo
+    {
+        return $this->belongsTo(Student::class, 'student_id');
     }
 
     public function subject(): BelongsTo
@@ -98,9 +105,11 @@ class TimetableSession extends Model
         return '#10B981'; // tu peux adapter par matière ou type de séance
     }
 
-    // Propriété calculée pour l'emplacement
-    public function getLocationAttribute()
+
+
+
+    public function getFullNameAttribute(): string
     {
-        return $this->room . ($this->building ? ' - ' . $this->building : '');
+        return $this->first_name . ' ' . $this->last_name;
     }
 }

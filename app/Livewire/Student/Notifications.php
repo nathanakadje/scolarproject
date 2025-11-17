@@ -21,6 +21,11 @@ class Notifications extends Component
 
     public function mount()
     {
+        $this->student = auth()->user()->student;
+        // dd($this->student);
+        if (!$this->student) {
+            abort(403, 'Profil étudiant non trouvé');
+        }
         // Marquer comme vue (pas lu) les notifications affichées
     }
 
